@@ -1,5 +1,18 @@
 const { db, admin } = require('../firebase.js');
 
+const generatePlantID = (userID) => {
+    // https://firebase.google.com/docs/firestore/manage-data/add-data
+    // you can make firestore generate a unique id for a specific collection by asking for a document in that collection with no input
+    // this will make a reference for a new document in that collection, generating an id for it
+    // just use this for plantID
+    const newPlantDoc = db.collection('Users')
+        .doc(userID)
+        .collection('plants')
+        .doc();
+
+    return newPlantDoc.id;
+}
+
 const getNextDiagnosisNumber = async (userID, plantID) => {
     try {
         // get the diagnoses of the plant we are looking for
