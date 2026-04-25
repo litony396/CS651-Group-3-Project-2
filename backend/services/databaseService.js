@@ -1,7 +1,28 @@
 const { db, admin } = require('../firebase.js');
 
 const getNextDiagnosisNumber = async (userID, plantID) => {
+    try {
+        // get the diagnoses of the plant we are looking for
+        const diagnoses = db.collection('Users')
+            .doc(userID)
+            .collection('Plants')
+            .doc(plantID)
+            .collection('Diagnoses');
 
+        // make a query for the current highest diagnosis number for this plant
+        const numberQueryResults = await diagnoses
+            .orderBy('diagnosisNumber', 'desc')
+            .limit(1)
+            .get();
+
+        // if the query resulted in nothing, then just return 1 because this is the first diagnosis for this plant
+        // otherwise just increment the largest diagnosis number by 1
+        return numberQueryResults.empty ? 1 : numberQueryResults.docs[0].data().diagnosisNumber + 1;
+
+    } catch (error) {
+        console.error("Error getting next diagnosis number: ", error);
+        throw new Error("Failed to retrieve next diagnosis number.");
+    }
 }
 
 // make a new diagnosis record for given plant
