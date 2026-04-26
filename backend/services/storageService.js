@@ -8,7 +8,7 @@ const BUCKET_NAME = 'plantcareai-f1498.firebasestorage.app';
 const bucket = admin.storage().bucket(BUCKET_NAME);
 
 // function that uploads image or audio to Firebase bucket
-const uploadFile = async (data, fileName, username, fileType) => {
+const uploadFile = async (data, fileName, userID, fileType) => {
     try {
         // use a timestamp in order to make sure audio files are not rewritten
         // for example, a user may upload two files with the same filename at different times -> we don't want the second file to overwrite the first one
@@ -21,7 +21,7 @@ const uploadFile = async (data, fileName, username, fileType) => {
         // Should follow guidelines on cloud storage naming from Google: https://docs.cloud.google.com/storage/docs/objects
         // Used Gemini to generate this code to normalize the audio file name - replaces all weird characters with _
         const safeName = fileName.replace(/[^a-zA-Z0-9.]/g, '_')
-        const storedFileName = `${folder}/${username}_${timestamp}_${safeName}`;
+        const storedFileName = `${folder}/${userID}/${timestamp}_${safeName}`;
 
         const file = bucket.file(storedFileName);
 
