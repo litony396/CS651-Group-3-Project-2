@@ -117,3 +117,5 @@ const saveNewDiagnosis = async (userID, plantID, diagnosisText, audioURL, imageU
         throw new Error("Diagnosis Failed to Save to the Database");
     }
 }
+
+module.exports = {generatePlantID, getPlantHistory, saveNewDiagnosis };
