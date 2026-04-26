@@ -1,5 +1,10 @@
 const { db, admin } = require('../firebase.js');
 
+// useful sources for the code here
+// https://firebase.google.com/docs/firestore/manage-data/add-data
+// https://firebase.google.com/docs/firestore/query-data/get-data#get_a_document
+// https://firebase.google.com/docs/firestore/query-data/order-limit-data
+
 const generatePlantID = (userID) => {
     // https://firebase.google.com/docs/firestore/manage-data/add-data
     // you can make firestore generate a unique id for a specific collection by asking for a document in that collection with no input
@@ -35,6 +40,46 @@ const getNextDiagnosisNumber = async (userID, plantID) => {
     } catch (error) {
         console.error("Error getting next diagnosis number: ", error);
         throw new Error("Failed to retrieve next diagnosis number.");
+    }
+}
+
+const getPlantHistory = async (userID, plantID) => {
+    try {
+        // get the diagnoses of the plant we are looking for
+        const diagnoses = db.collection('Users')
+            .doc(userID)
+            .collection('Plants')
+            .doc(plantID)
+            .collection('Diagnoses');
+
+        // order by diagnosisNumber with the newest being ordered first
+        // have the newest stuff first because those are more likely to be accessed than older results
+        const orderQueryResults = await diagnoses
+            .orderBy('diagnosisNumber', 'desc')
+            .get();
+
+        // if the query is empty then just return a blank array since there is no data to give
+        if (orderQueryResults.empty) {
+            return [];
+        }
+
+        // return this history after some formatting
+        return orderQueryResults.docs.map(doc => {
+            const data = doc.data();
+
+            // timestamps on the database use the Google timestamps which aren't human-readable
+            // change them to be readable so they can be displayed on the website
+            const readableTimestamp = data.timestamp.toDate().toISOString();
+
+            return {
+                ...data, // use data as given
+                timestamp: readableTimestamp // replace old timestamp with this readable one
+            };
+        })
+
+    } catch (error) {
+        console.error(`Error getting plant history for user ${userID} and plant ${plantID}`);
+        throw new Error("Failed to retrieve plant history.")
     }
 }
 
