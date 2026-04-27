@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './dashboard.css';
+import AudioRecorder from "../components/audioRecorder";
 
 export default function Dashboard() {
     // selectedImages and selectedAudio hold the uploaded images and audio files
@@ -67,9 +68,7 @@ export default function Dashboard() {
 
                 <div>
                     <h2>2. Describe Symptoms, Environment, and Care Routine</h2>
-                    {/* TODO: ADD AUDIO UPLOAD */}
-                    {/* You will need your Audio component here to update setSelectedAudio */}
-                    <p>Audio recorder placeholder</p>
+                    <AudioRecorder setAudio={setSelectedAudio} />
                 </div>
             </div>
 
