@@ -1,0 +1,174 @@
+/* Made by Gemini to be similar styling to how mockup looked */
+
+.dashboardContainer {
+    background-color: #f4f8d3; /* Light yellow-green background matching the mockup */
+    min-height: 100vh;
+    padding: 40px 20px;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #333;
+}
+
+.dashboardContainer h1 {
+    text-align: center;
+    color: #1a4d2e; /* Dark green for headers */
+    margin-bottom: 40px;
+    font-size: 2.2rem;
+}
+
+/* --- Input Cards Section --- */
+.inputSection {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.inputSection > div {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 30px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.inputSection h2 {
+    font-size: 1.1rem;
+    color: #2c2c2c;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 10px;
+}
+
+/* --- Action Button Section --- */
+.actionSection {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.actionSection button {
+    background-color: #9b2242; /* Burgundy/Crimson pill button */
+    color: white;
+    border: none;
+    padding: 14px 40px;
+    border-radius: 30px; /* Pill shape */
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(155, 34, 66, 0.3);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.actionSection button:hover:not(:disabled) {
+    background-color: #801a35;
+    transform: translateY(-1px);
+}
+
+.actionSection button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* --- Results/Diagnosis Section --- */
+.resultsSection {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 40px;
+    max-width: 900px;
+    margin: 0 auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.diagnosisHeader {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #757575;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.coreDiagnosis h2 {
+    font-size: 1.8rem;
+    color: #1a1a1a;
+    margin: 0 0 10px 0;
+}
+
+.coreDiagnosis p {
+    font-size: 1rem;
+    color: #4a4a4a;
+    margin: 0;
+}
+
+.divider {
+    border: 0;
+    height: 1px;
+    background-color: #eaeaea;
+    margin: 25px 0;
+}
+
+/* Two-column layout for the diagnosis details */
+.diagnosisDetails {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.actionSteps {
+    flex: 1;
+    min-width: 300px;
+}
+
+.treatmentBlock h3, .preventionBlock h3 {
+    font-size: 1.1rem;
+    color: #1a1a1a;
+    margin-bottom: 15px;
+    border-left: 3px solid #1a4d2e;
+    padding-left: 10px;
+}
+
+.treatmentList {
+    padding-left: 20px;
+    margin-bottom: 30px;
+    color: #4a4a4a;
+    line-height: 1.6;
+}
+
+.treatmentList li {
+    margin-bottom: 12px;
+}
+
+.preventionList {
+    padding-left: 20px;
+    list-style-type: disc;
+    color: #4a4a4a;
+    line-height: 1.6;
+}
+
+.preventionList li {
+    margin-bottom: 10px;
+}
+
+/* Right column with the tinted background from the mockup */
+.explanationSection {
+    flex: 1;
+    min-width: 300px;
+    background-color: #f7f9ee; /* Very light tinted box */
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.explanationSection h3 {
+    font-size: 1.1rem;
+    color: #1a1a1a;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.explanationText {
+    color: #4a4a4a;
+    line-height: 1.7;
+    margin: 0;
+}
