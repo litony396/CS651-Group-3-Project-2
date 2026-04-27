@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './dashboard.css';
 import AudioRecorder from "../components/audioRecorder";
+import ImageSelector from "../components/imageSelector";
 
 export default function Dashboard() {
     // selectedImages and selectedAudio hold the uploaded images and audio files
@@ -56,14 +57,7 @@ export default function Dashboard() {
             <div className="inputSection">
                 <div>
                     <h2>1. Select Plant Photos</h2>
-                    {/* You will need an input here to update setSelectedImages */}
-                    {/* TODO: ADD GOOGLE PHOTOS UPLOAD */}
-                    <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={(e) => setSelectedImages(Array.from(e.target.files))}
-                    />
+                    <ImageSelector setDashboardImages={setSelectedImages} />
                 </div>
 
                 <div>
