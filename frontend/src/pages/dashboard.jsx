@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../public/stylesheets/styles.css';
+import './dashboard.css';
 
 export default function Dashboard() {
     // selectedImages and selectedAudio hold the uploaded images and audio files
