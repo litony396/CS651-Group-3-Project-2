@@ -1,5 +1,19 @@
 /* Made by Gemini to be similar styling to how mockup looked */
 
+/* get rid of white borders in the edges of the website */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f4f8d3; /* Same light yellow-green as your dashboard */
+}
+
+#root {
+    margin: 0;
+    padding: 0;
+}
+
 .dashboardContainer {
     background-color: #f4f8d3; /* Light yellow-green background matching the mockup */
     min-height: 100vh;
