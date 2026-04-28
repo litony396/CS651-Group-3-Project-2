@@ -3,7 +3,7 @@ import './dashboard.css';
 import AudioRecorder from "../components/audioRecorder";
 import ImageSelector from "../components/imageSelector";
 
-export default function Dashboard() {
+export default function Dashboard({ user }) {
     // selectedImages and selectedAudio hold the uploaded images and audio files
     const [selectedImages, setSelectedImages] = useState([]);
     const [selectedAudio, setSelectedAudio] = useState(null);
