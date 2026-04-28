@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import GooglePhotosPicker from "./GooglePhotosPicker.jsx";
 import "./imageSelector.css"
 
-const MAX_IMAGES = 6;
+const MAX_IMAGES = 9;
 
 
 export default function ImageSelector({ setDashboardImages, photoToken }) {
