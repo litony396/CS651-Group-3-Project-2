@@ -19,7 +19,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// Gemini said to write this line of code to allow permission to read user's Google Photos
-provider.addScope('https://www.googleapis.com/auth/photoslibrary.readonly');
+// Gemini said to write this line of code to allow permission to read user's Google Photos using photos picker API
+provider.addScope('https://www.googleapis.com/auth/photospicker.mediaitems.readonly');
 
 export { auth, provider, signInWithPopup };
