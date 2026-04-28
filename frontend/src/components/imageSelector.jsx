@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import GooglePhotosPicker from "./GooglePhotosPicker.jsx";
+import GooglePhotosPicker from "./googlePhotosPicker.jsx";
 import "./imageSelector.css"
 
 const MAX_IMAGES = 9;
@@ -61,7 +61,7 @@ export default function ImageSelector({ setDashboardImages, photoToken }) {
                     disabled={images.length >= MAX_IMAGES}
                     style={{ display: 'none' }}
                 />
-                {images.length >= MAX_IMAGES ? "Limit Reached" : "Add Local Photos"}
+                {images.length >= MAX_IMAGES ? "Limit Reached" : "Upload Local Photos"}
             </label>
 
             {photoToken && (
