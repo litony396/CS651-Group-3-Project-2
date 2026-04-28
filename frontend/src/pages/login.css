@@ -1,0 +1,89 @@
+/* Generated Using Gemini */
+
+/* Center everything on the screen */
+.loginContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f8d3; /* Dashboard light yellow-green */
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    padding: 20px;
+}
+
+.loginCard {
+    background-color: #ffffff;
+    padding: 50px 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.loginHeader h1 {
+    color: #1a4d2e; /* Dashboard dark green */
+    font-size: 2.2rem;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.loginHeader p {
+    color: #666;
+    margin-bottom: 35px;
+    line-height: 1.5;
+}
+
+/* Google Sign-in Button */
+.googleBtn {
+    background-color: #9b2242; /* Dashboard burgundy */
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(155, 34, 66, 0.2);
+}
+
+.googleBtn:hover:not(:disabled) {
+    background-color: #801a35;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(155, 34, 66, 0.3);
+}
+
+.googleBtn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.googleIcon {
+    background-color: white;
+    color: #9b2242;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.errorMessage {
+    background-color: #ffebee;
+    color: #d32f2f;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
