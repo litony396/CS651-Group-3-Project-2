@@ -5,7 +5,7 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
-    width: 100%;
+    align-items:center;
 }
 
 /* Flexbox gallery to hold the thumbnails */
@@ -75,18 +75,31 @@
 }
 
 .uploadButton {
-    display: inline-block;
-    padding: 10px 20px;
-    cursor: pointer;
-    background-color: #f0f0f0;
-    border: 1px dashed #999;
-    border-radius: 8px;
-    color: #555;
+    background-color: #9b2242; /* Burgundy to match Analyze button */
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 16px;
     font-weight: 600;
-    margin-bottom: 15px;
-    transition: background-color 0.2s;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(155, 34, 66, 0.2);
 }
 
-.uploadButton:hover {
-    background-color: #e2e2e2;
+.uploadButton:hover:not(.disabled) {
+    background-color: #801a35;
+    transform: translateY(-1px);
+}
+
+/* The Gray Fade-out Logic */
+.uploadButton.disabled {
+    background-color: #ccc; /* Gray color to match "Analyze Plant Health" */
+    color: #666;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
 }

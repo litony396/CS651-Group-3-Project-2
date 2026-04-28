@@ -39,16 +39,17 @@ export default function ImageSelector({ setDashboardImages }) {
 
     return (
         <div className="imageSelector">
-            <label className="uploadButton">
+            {/* Dynamically add a disabled tag in order to use css styles as needed (made by Gemini) */}
+            <label className={`uploadButton ${images.length >= MAX_IMAGES ? 'disabled' : ''}`}>
                 <input
                     type="file"
                     multiple
                     accept="image/*"
                     onChange={handleImageUpload}
-                    disabled={images.length >= 6}
-                    style ={{display: "none"}}
+                    disabled={images.length >= MAX_IMAGES}
+                    style={{ display: 'none' }}
                 />
-                {images.length >= 6 ? "Image Limit Reached" : "Click to Add Photos"}
+                {images.length >= MAX_IMAGES ? "Limit Reached" : "Add Photos"}
             </label>
             <div className="thumbnailGallery">
                 {images.map((img, index) => (

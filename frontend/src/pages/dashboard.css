@@ -1,5 +1,17 @@
 /* Made by Gemini to be similar styling to how mockup looked */
 
+/* Forces all form elements to use the dashboard's font family */
+button,
+input,
+optgroup,
+select,
+textarea,
+label {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px; /* Standardizes the base size for all buttons */
+    line-height: 1.2;
+}
+
 /* get rid of white borders in the edges of the website */
 html, body {
     margin: 0;
@@ -68,7 +80,7 @@ html, body {
     border: none;
     padding: 14px 40px;
     border-radius: 30px; /* Pill shape */
-    font-size: 1.1rem;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(155, 34, 66, 0.3);
