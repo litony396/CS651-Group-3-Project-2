@@ -84,3 +84,59 @@ export default function GooglePhotosPicker({ photoToken, onPhotosImported, disab
             console.error("Polling error:", err);
         }
     };
+
+    const downloadImages = async (sessionId) => {
+        try {
+            // fetch the images the user requested
+            const itemsRes = await fetch(`https://photospicker.googleapis.com/v1/mediaItems?sessionId=${sessionId}`, {
+                headers: { 'Authorization': `Bearer ${photoToken}` }
+            });
+            const itemsData = await itemsRes.json();
+            const mediaItems = itemsData.mediaItems || [];
+
+            // download the images as File objects to pass back to imageSelector.jsx
+            // asked Gemini to write this part since we were unsure how to do this with mediaItems
+            const filePromises = mediaItems.map(async (item, index) => {
+                // fetch image and compress down to have 1024 width to save space (Gemini does not need a 4k image)
+                const imageResponse = await fetch(`${item.mediaFile.baseUrl}=w1024`);
+                const blob = await imageResponse.blob();
+
+                // get the file type
+                const mimeType = item.mediaFile.mimeType;
+                const extension = mimeType.split('/')[1];
+
+                // create new File, use Date.now() to make the photo name unique in database
+                // use ${index} just in case there is a collision within the same upload and the granularity of Date.now() is not sufficient
+                return new File([blob], `google_photo_${Date.now()}_${index}.${extension}`, { type: mimeType });
+            });
+
+            const fileObjects = await Promise.all(filePromises);
+
+            // give images to imageSelector
+            onPhotosImported(fileObjects);
+
+        } catch (err) {
+            console.error("Download error:", err);
+            alert("Failed to download selected photos.");
+        } finally {
+            setIsPicking(false);
+            setStatusText('☁️ Google Photos');
+        }
+    };
+
+    // used Gemini to generate how the button would look
+    return (
+        <button
+            type="button"
+            className={`uploadButton ${disabled || isPicking ? 'disabled' : ''}`}
+            onClick={startPicker}
+            disabled={disabled || isPicking}
+            style={{
+                background: disabled || isPicking ? '#ccc' : '#4285F4', // Google Blue
+                color: disabled || isPicking ? '#666' : 'white'
+            }}
+        >
+            {statusText}
+        </button>
+    );
+}
