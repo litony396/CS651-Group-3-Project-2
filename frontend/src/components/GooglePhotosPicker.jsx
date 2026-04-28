@@ -43,11 +43,11 @@ export default function GooglePhotosPicker({ photoToken, onPhotosImported, disab
             }
 
             // set the text to let user know they should use the popup
-            setStatusText('Waiting for selection...');
+            setStatusText('Click to Cancel');
 
             // start polling every 2.5 seconds for data to be sent from the picker
             pollIntervalRef.current = setInterval(() => {
-                checkSessionStatus(sessionData.id, popup);
+                checkSessionStatus(sessionData.id);
             }, 2500);
 
         } catch (error) {
@@ -57,7 +57,7 @@ export default function GooglePhotosPicker({ photoToken, onPhotosImported, disab
         }
     };
 
-    const checkSessionStatus = async (sessionId, popup) => {
+    const checkSessionStatus = async (sessionId) => {
         try {
             // ask the picker api for the status of the input session
             const checkRes = await fetch(`https://photospicker.googleapis.com/v1/sessions/${sessionId}`, {
@@ -65,15 +65,14 @@ export default function GooglePhotosPicker({ photoToken, onPhotosImported, disab
                     'Authorization': `Bearer ${photoToken}`
                 }
             });
-            const sessionData = await checkRes.json();
 
-            // if the user doesn't pick any photos and closes the popup, just reset everything
-            if (popup.closed && !sessionData.mediaItemsSet) {
-                clearInterval(pollIntervalRef.current);
-                setIsPicking(false);
-                setStatusText('Upload From Google Photos');
+            // if this poll fails, then warn the console and wait for the next call
+            if (!checkRes.ok) {
+                console.warn("Polling check failed.")
                 return;
             }
+
+            const sessionData = await checkRes.json();
 
             // if the user picked photos, then stop polling and download the images
             if (sessionData.mediaItemsSet) {
@@ -127,13 +126,26 @@ export default function GooglePhotosPicker({ photoToken, onPhotosImported, disab
         }
     };
 
+    // before had code that checked if the popup was closed, but it was running into Cross-Origin Opener Policy
+    // to solve this, just switched to the user manually pressing close on the button
+    const handleButtonClick = () => {
+        if (isPicking) {
+            // cancel the Picker request
+            clearInterval(pollIntervalRef.current);
+            setIsPicking(false);
+            setStatusText('Upload From Google Photos');
+        } else {
+            startPicker();
+        }
+    }
+
     // used Gemini to generate how the button would look
     return (
         <button
             type="button"
-            className={`uploadButton ${disabled || isPicking ? 'disabled' : ''}`}
-            onClick={startPicker}
-            disabled={disabled || isPicking}
+            className={`uploadButton ${disabled ? 'disabled' : ''}`}
+            onClick={handleButtonClick}
+            disabled={disabled}
             style={{
                 background: disabled || isPicking ? '#ccc' : '#4285F4', // Google Blue
                 color: disabled || isPicking ? '#666' : 'white'
