@@ -39,14 +39,17 @@ export default function ImageSelector({ setDashboardImages }) {
 
     return (
         <div className="imageSelector">
-            <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageUpload}
-                disabled={images.length >= 6}
-            />
-
+            <label className="uploadButton">
+                <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    disabled={images.length >= 6}
+                    style ={{display: "none"}}
+                />
+                {images.length >= 6 ? "Image Limit Reached" : "Click to Add Photos"}
+            </label>
             <div className="thumbnailGallery">
                 {images.map((img, index) => (
                     <div key={index} className="thumbnailItem">

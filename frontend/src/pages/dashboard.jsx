@@ -56,7 +56,7 @@ export default function Dashboard() {
             {/* Handle Images and Audio */}
             <div className="inputSection">
                 <div>
-                    <h2>1. Select Plant Photos</h2>
+                    <h2>1. Select Plant Photos (max 6)</h2>
                     <ImageSelector setDashboardImages={setSelectedImages} />
                 </div>
 
