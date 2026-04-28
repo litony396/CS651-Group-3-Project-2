@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import GooglePhotosPicker from "./GooglePhotosPicker.jsx";
 import "./imageSelector.css"
 
 const MAX_IMAGES = 6;
 
 
-export default function ImageSelector({ setDashboardImages }) {
+export default function ImageSelector({ setDashboardImages, photoToken }) {
     // stores data on the uploaded images
     // consists of the actual file object that holds the data and a url in order to actually display the thumbnail in html
     const [images, setImages] = useState([]);
@@ -17,7 +18,18 @@ export default function ImageSelector({ setDashboardImages }) {
     }, [images, setDashboardImages]);
 
     const handleImageUpload = (upload) => {
+        // turn uploaded files into an array so we can slice it in processImages
         const files = Array.from(upload.target.files);
+        processImages(files);
+    };
+
+    const handleGooglePhotosUpload = (importedFiles) => {
+        processImages(importedFiles);
+    };
+
+    // helper to add images to the images useState
+    // separate function because handleImageUpload and handleGooglePhotosUpload both use the same code after preprocessing
+    const processImages = (files) => {
         // enforce that there are no more than MAX_IMAGES
         const availableSlots = MAX_IMAGES - images.length;
 
@@ -30,7 +42,7 @@ export default function ImageSelector({ setDashboardImages }) {
 
         // set images to have the existing images and new images just uploaded
         setImages(existingImages => [...existingImages, ...newFiles]);
-    };
+    }
 
     const removeImage = (indexToRemove) => {
         // remove the image at the index provided
@@ -49,8 +61,17 @@ export default function ImageSelector({ setDashboardImages }) {
                     disabled={images.length >= MAX_IMAGES}
                     style={{ display: 'none' }}
                 />
-                {images.length >= MAX_IMAGES ? "Limit Reached" : "Add Photos"}
+                {images.length >= MAX_IMAGES ? "Limit Reached" : "Add Local Photos"}
             </label>
+
+            {photoToken && (
+                <GooglePhotosPicker
+                    photoToken={photoToken}
+                    onPhotosImported={handleGooglePhotosUpload}
+                    disabled={images.length >= MAX_IMAGES}
+                />
+            )}
+
             <div className="thumbnailGallery">
                 {images.map((img, index) => (
                     <div key={index} className="thumbnailItem">
@@ -59,8 +80,6 @@ export default function ImageSelector({ setDashboardImages }) {
                     </div>
                 ))}
             </div>
-
-            {/* TODO: ADD GOOGLE PHOTOS INTEGRATION */}
         </div>
     );
 }

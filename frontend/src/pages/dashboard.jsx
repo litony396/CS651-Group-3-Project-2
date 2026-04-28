@@ -33,7 +33,8 @@ export default function Dashboard({ user }) {
             })
 
             if (!response.ok) {
-                throw new Error('Response from /api/diagnose was not ok');
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status} - ${errorText}`);
             }
 
             const data = await response.json();
@@ -57,7 +58,7 @@ export default function Dashboard({ user }) {
             <div className="inputSection">
                 <div>
                     <h2>1. Select Plant Photos (max 6)</h2>
-                    <ImageSelector setDashboardImages={setSelectedImages} />
+                    <ImageSelector setDashboardImages={setSelectedImages} photoToken={user.googlePhotosToken} />
                 </div>
 
                 <div>

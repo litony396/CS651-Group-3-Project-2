@@ -26,7 +26,8 @@ export default function GooglePhotosPicker({ photoToken, onPhotosImported, disab
             });
 
             if (!sessionRes.ok) {
-                throw new Error("Failed to create picker session.");
+                const errorText = await sessionRes.text();
+                throw new Error(`HTTP ${sessionRes.status} - ${errorText}`);
             }
 
             const sessionData = await sessionRes.json();
@@ -98,7 +99,9 @@ export default function GooglePhotosPicker({ photoToken, onPhotosImported, disab
             // asked Gemini to write this part since we were unsure how to do this with mediaItems
             const filePromises = mediaItems.map(async (item, index) => {
                 // fetch image and compress down to have 1024 width to save space (Gemini does not need a 4k image)
-                const imageResponse = await fetch(`${item.mediaFile.baseUrl}=w1024`);
+                const imageResponse = await fetch(`${item.mediaFile.baseUrl}=w1024`, {
+                    headers: { 'Authorization': `Bearer ${photoToken}` }
+                });
                 const blob = await imageResponse.blob();
 
                 // get the file type
@@ -120,7 +123,7 @@ export default function GooglePhotosPicker({ photoToken, onPhotosImported, disab
             alert("Failed to download selected photos.");
         } finally {
             setIsPicking(false);
-            setStatusText('☁️ Google Photos');
+            setStatusText('Upload From Google Photos');
         }
     };
 
