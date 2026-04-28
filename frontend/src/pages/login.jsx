@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { auth, provider, signInWithPopup } from "../firebase.js"
 import './login.css';
+import {GoogleAuthProvider} from "firebase/auth";
 
 export default function Login({ setUser }) {
     // used to change what is rendered while logging in
@@ -10,14 +12,24 @@ export default function Login({ setUser }) {
         setIsLoggingIn(true);
 
         try {
-            // add the Google stuff later, just make a skeleton for now
-            const mockUser = {
-                uid: '12345',
-                displayName: 'User'
-            };
+            // open the Google sign-in pop-up window
+            const loginResult = await signInWithPopup(auth, provider);
 
-            console.log("Logged in: " + JSON.stringify(mockUser));
-            setUser(mockUser);
+            // get the Google Photos credential
+            const credential = GoogleAuthProvider.credentialFromResult(loginResult);
+            const googlePhotosToken = credential.accessToken;
+
+            // get the user from the login result
+            const user = loginResult.user;
+
+            console.log("Logged in: ", user.displayName);
+
+            // only give the important stuff from user instead of the whole thing to simplify
+            setUser({
+                uid: user.uid,
+                displayName : user.displayName,
+                googlePhotosToken: googlePhotosToken
+            });
         } catch (err) {
             console.error("Login failed: ", err);
             alert("Failed to sign in with Google. Please try again.");
