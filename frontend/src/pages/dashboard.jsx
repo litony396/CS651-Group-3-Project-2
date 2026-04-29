@@ -44,6 +44,8 @@ export default function Dashboard({ user }) {
                 setPlantsIsLoaded(false);
             }
         };
+
+        fetchPlants();
     }, [user.uid]);
 
     // fetch history when drop down selection changes
