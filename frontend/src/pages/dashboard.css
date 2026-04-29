@@ -201,15 +201,26 @@ html, body {
 
 /* --- Plant Selection Section --- */
 .plantSelectionContainer {
-    text-align: center;
+    display: flex;
+    flex-direction: column; /* Stacks the dropdown and name input vertically */
+    align-items: center;    /* Centers all children horizontally */
+    gap: 15px;              /* Provides consistent spacing between elements */
     margin-bottom: 30px;
 }
 
+/* Adjust the label to remove side margins for perfect centering */
 .plantLabel {
     font-weight: bold;
-    margin-right: 15px;
     font-size: 1.1rem;
-    color: #1a4d2e; /* Dark green matching your headers */
+    color: #1a4d2e;
+    margin-right: 0;
+    margin-bottom: 5px;
+}
+
+.nameInputWrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 .plantDropdown {
