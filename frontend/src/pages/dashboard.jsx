@@ -29,7 +29,7 @@ export default function Dashboard({ user }) {
         const fetchPlants = async () => {
             try {
                 // make a query for the user's plants
-                const res = await fetch(`/api/plants?uid=${user.uid}`)
+                const res = await fetch(`/api/plants/${user.uid}`)
                 if (!res.ok) {
                     throw new Error(`/api/plants gave: ${res.status}`)
                 }
@@ -57,7 +57,7 @@ export default function Dashboard({ user }) {
         const fetchHistory = async () => {
             setIsLoadingHistory(true);
             try {
-                const res = await fetch(`/api/plants/${selectedPlantID}/history?uid=${user.uid}`);
+                const res = await fetch(`/api/plants/${user.uid}/history?plantID=${selectedPlantID}`);
                 if (!res.ok) {
                     throw new Error(`Failed to fetch history: ${res.status}`);
                 }
