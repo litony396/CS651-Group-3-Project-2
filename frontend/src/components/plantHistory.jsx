@@ -33,9 +33,9 @@ export default function PlantHistory({ history, isLoadingHistory, selectedPlantI
                 {history.map((record, index) => (
                     <div key={record.id || index} className="phHistoryCard">
 
-                        {/* Timestamp Header */}
+                        {/* Diagnosis Number and Timestamp Header */}
                         <h4 className="phCardHeader">
-                            {new Date(record.timestamp).toLocaleString()}
+                            Diagnosis #{record.diagnosisNumber} | {new Date(record.timestamp).toLocaleString()}
                         </h4>
 
                         {/* Render Past Images (if any exist) */}
