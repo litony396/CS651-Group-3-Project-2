@@ -52,6 +52,8 @@ export default function GooglePhotosPicker({ photoToken, onPhotosImported, disab
 
         } catch (error) {
             console.error("Picker Error:", error);
+            alert("Error starting Photos Picker. Make sure your Google Account has registered its Google Photos account by visiting the Google Photos website." +
+                "Please try again.");
             setIsPicking(false);
             setStatusText('Upload From Google Photos');
         }
