@@ -43,6 +43,32 @@ const getNextDiagnosisNumber = async (userID, plantID) => {
     }
 }
 
+const getUserPlants = async (userID) => {
+    try {
+        // get the user's plant collection
+        const plantsQueryResults = await db.collection('Users')
+            .doc(userID)
+            .collection('Plants')
+            .get();
+
+        if (plantsQueryResults.empty) {
+            return [];
+        }
+
+        // map over the documents and attach the document ID so React can use it for the dropdown keys
+        return plantsQueryResults.docs.map(doc => {
+            return {
+                id: doc.id,
+                ...doc.data()
+            };
+        });
+
+    } catch (error) {
+        console.error(`Error getting plants for user ${userID}:`, error);
+        throw new Error("Failed to retrieve user plants.");
+    }
+}
+
 const getPlantHistory = async (userID, plantID) => {
     try {
         // get the diagnoses of the plant we are looking for
@@ -118,4 +144,4 @@ const saveNewDiagnosis = async (userID, plantID, diagnosisText, audioURL, imageU
     }
 }
 
-module.exports = {generatePlantID, getPlantHistory, saveNewDiagnosis };
+module.exports = {generatePlantID, getUserPlants, getPlantHistory, saveNewDiagnosis };
