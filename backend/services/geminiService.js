@@ -1,6 +1,15 @@
 const { GoogleGenAI } = require('@google/genai')
 const { z } = require('zod');
-const { zodToJsonSchema }  = require('zod-to-json-schema');
+const { Logging } = require("@google-cloud/logging");
+
+const logging = new Logging();
+const log = logging.log("gemini-api-requests");
+
+async function logRequest(requestData) {
+    const metadata= { resource: { type: "global" }};
+    const entry = log.entry(metadata, requestData);
+    await log.write(entry)
+}
 
 // initialize with API key
 const genAI = new GoogleGenAI({apiKey : process.env.GEMINI_API_KEY});
@@ -57,6 +66,18 @@ const generateWithRetry = async (requestConfig, maxRetries = 4) => {
                 // exponential backoff: 1000ms, then 2000ms, then 4000ms
                 const delay = Math.pow(2, attempt) * 1000;
                 console.warn(`Gemini API busy. Retrying in ${delay}ms... (Attempt ${attempt} of ${maxRetries})`);
+
+                try {
+                    await logRequest({
+                        event: "Gemini API Retry Initiated",
+                        attemptNumber: attempt,
+                        reason: error.status === 503 ? "Service Unavailable (503)" : "Rate Limited (429)",
+                        delayImposedMs: delay
+                    });
+                } catch (e) {
+                    console.warn("Failed to write to log for Gemini Retry")
+                }
+
                 await sleep(delay);
             } else {
                 throw error;
@@ -92,10 +113,16 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
         // payload that is built gradually and given to Gemini at the end
         const contentsPayload = [];
 
+        // payload used for logging, has shorter descriptions
+        const logPayload = [];
+
         contentsPayload.push(`
             You are an expert plant pathologist and entomologist.
             Your job is to analyze the provided information about the plant in order to diagnose any diseases or pest infestations present in the plant and how to fix them.
         `);
+
+        logPayload.push("You are an expert plant pathologist...");
+
 
         // assumes plantHistory is chronological (oldest to newest), the last item is n-1
         // want to include the images/audio from this n-1 entry
@@ -110,6 +137,8 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
                     --- OLDER MEDICAL HISTORY ---
                     ${olderHistory.map(d => `Diagnosis ${d.diagnosisNumber} (${d.timestamp}): ${JSON.stringify(d.generatedDiagnosis)}`).join('\n')}
                 `);
+
+                logPayload.push(`--- OLDER MEDICAL HISTORY --- (Included ${olderHistory.length} previous text diagnoses)`)
             }
 
             // n-1 visual/audio context
@@ -118,27 +147,48 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
                 Previous Diagnosis Result: ${JSON.stringify(nMinusOne.generatedDiagnosis)}
                 Review these past images/audio (if any) to establish a baseline:
             `);
+            logPayload.push(`--- PREVIOUS CHECKUP --- (Diagnosis ${nMinusOne.diagnosisNumber})`)
 
             // fetch and append n-1 Media
             if (nMinusOne.imageURLs && nMinusOne.imageURLs.length > 0) {
                 const pastImages = await Promise.all(nMinusOne.imageURLs.map(urlToBytes));
                 contentsPayload.push(...pastImages.filter(Boolean));
+                logPayload.push(`[Included ${nMinusOne.imageURLs.length} past images]`)
             }
             if (nMinusOne.audioURL) {
                 const pastAudio = await urlToBytes(nMinusOne.audioURL);
                 if (pastAudio) contentsPayload.push(pastAudio);
+                logPayload.push(`[Included past audio]`);
             }
         } else {
             contentsPayload.push('--- MEDICAL HISTORY ---\nThis is a new plant with no medical history. Establish a baseline.');
+            logPayload.push('--- MEDICAL HISTORY ---\nNew plant, no history.');
         }
 
         // new data
         contentsPayload.push(`
-            --- CURRENT CHECKUP (Today) ---
+            --- CURRENT CHECKUP ---
             Compare this data to the baseline above (if available), determine what has changed, and give next steps.
         `);
+        logPayload.push('--- CURRENT CHECKUP ---');
+
         contentsPayload.push(...newImageData.filter(Boolean));
-        if (newAudioData) contentsPayload.push(newAudioData);
+        logPayload.push(`[Attached ${imageURLs.length} new images for analysis]`);
+
+        if (newAudioData)  {
+            contentsPayload.push(newAudioData);
+            logPayload.push(`[Attached new audio recording for analysis]`);
+        }
+
+        try {
+            await logRequest({
+                event: "Gemini API Request Started",
+                modelUsed: "gemini-3-flash-preview",
+                payloadSent: logPayload
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for Gemini Payload");
+        }
 
         // send data and prompt to Gemini
         // switched to explicitly giving response schema since it refused to work with zod
@@ -169,9 +219,26 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
             }
         });
 
+        try {
+            await logRequest({
+                event: "Gemini Diagnosis Successfully Generated",
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for Gemini Success");
+        }
+
         // use zod schema to make sure that the final JSON returned is correct
         return diagnosisSchema.parse(JSON.parse(result.text));
     } catch (error) {
+        try {
+            await logRequest({
+                event: "Gemini Diagnosis Failed",
+                error: error.message
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for Gemini Failure");
+        }
+
         console.error("Gemini API Error: ", error);
         throw new Error("Gemini Diagnosis Request Failed.");
     }
