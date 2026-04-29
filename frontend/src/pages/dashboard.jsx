@@ -29,7 +29,7 @@ export default function Dashboard({ user }) {
     // used to track whether the selected plant has a name
     // make it a const instead of basing it off of plantName because when you type your first letter into plantName, it'll disable the entry form
     const selectedPlant = userPlants.find((p) => p.id === selectedPlantID);
-    const hasName = Boolean(selectedPlant && selectedPlant.name);
+    const hasName = Boolean(selectedPlant?.name);
 
     useEffect(() => {
         // have to write separate function because useEffect cannot do fetch since it cannot be async
@@ -64,7 +64,7 @@ export default function Dashboard({ user }) {
 
         // set the plant name to the one we want
         const plant = userPlants.find(p => p.plantID === selectedPlantID);
-        setPlantName(plant.name || "");
+        setPlantName(plant?.name || "");
 
         const fetchHistory = async () => {
             setIsLoadingHistory(true);
@@ -167,7 +167,7 @@ export default function Dashboard({ user }) {
                         <option value="">Register a New Plant</option>
                         {userPlants.map(plant => (
                             <option key={plant.id} value={plant.id}>
-                                {plant.name || `Plant ID: ${plant.id}`}
+                                {plant?.name || `Plant ID: ${plant.id}`}
                             </option>
                         ))}
                     </select>
