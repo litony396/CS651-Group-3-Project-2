@@ -20,7 +20,7 @@ export default function CommunityFeed() {
         const fetchFeed = async () => {
             try {
                 // call backend for data
-                const res = await fetch('/api/plants/community/latest');
+                const res = await fetch('/api/plants/community');
                 if (!res.ok) {
                     throw new Error(`Failed to fetch community feed: ${res.status}`);
                 }

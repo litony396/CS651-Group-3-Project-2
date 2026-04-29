@@ -1,7 +1,21 @@
 const express = require('express');
-const { getPlantHistory, getUserPlants } = require('../services/databaseService');
+const { getPlantHistory, getUserPlants, getCommunityFeed } = require('../services/databaseService');
 
 const router = express.Router();
+
+// GET /api/plants/community
+router.get('/community', async (req, res) => {
+    try {
+        // fetch feed from Firestore
+        const feed = await getCommunityFeed();
+
+        // send it back matching JSON structure expected by frontend
+        res.status(200).json({ feed: feed });
+    } catch (error) {
+        console.error("Error when trying to use api/plant/community", error);
+        res.status(500).json({ error: "Internal server error while fetching community feed." });
+    }
+});
 
 // GET /api/plants/:userID
 router.get('/:userID', async (req, res) => {

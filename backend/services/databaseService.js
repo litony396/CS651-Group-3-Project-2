@@ -69,6 +69,42 @@ const getUserPlants = async (userID) => {
     }
 }
 
+// collects 9 newest diagnoses to populate the community feed
+const getCommunityFeed = async () => {
+    try {
+        // collectionGroup searches every subcollection named 'diagnoses'
+        const latestDiagnosesQueryResult = await db.collectionGroup('Diagnoses')
+            .orderBy('timestamp', 'desc')
+            .limit(9)
+            .get();
+
+        if (latestDiagnosesQueryResult.empty) {
+            return [];
+        }
+
+        return latestDiagnosesQueryResult.docs.map(doc => {
+            const data = doc.data();
+
+            // extract the user/plant IDs directly from the Firestore path
+            // schema: Users/{userID}/Plants/{plantID}/Diagnoses/{diagnosisID}
+            const plantID = doc.ref.parent.parent.id;
+            const userID = doc.ref.parent.parent.parent.parent.id;
+
+            return {
+                id: doc.id,
+                userID: userID,
+                plantID: plantID,
+                ...data,
+                // Ensure the timestamp is readable for the React frontend
+                timestamp: data.timestamp ? data.timestamp.toDate().toISOString() : new Date().toISOString()
+            };
+        });
+    } catch (error) {
+        console.error("Error fetching community diagnoses: ", error);
+        throw new Error("Failed to retrieve global feed.");
+    }
+}
+
 const getPlantHistory = async (userID, plantID) => {
     try {
         // get the diagnoses of the plant we are looking for
@@ -165,4 +201,4 @@ const saveNewDiagnosis = async (userID, plantID, diagnosisText, audioURL, imageU
     }
 }
 
-module.exports = {generatePlantID, getUserPlants, getPlantHistory, saveNewDiagnosis };
+module.exports = {generatePlantID, getUserPlants, getCommunityFeed, getPlantHistory, saveNewDiagnosis };
