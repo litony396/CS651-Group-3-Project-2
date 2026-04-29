@@ -137,12 +137,14 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
             --- CURRENT CHECKUP (Today) ---
             Compare this data to the baseline above (if available), determine what has changed, and give next steps.
         `);
+        contentsPayload.push(...newImageData.filter(Boolean));
+        if (newAudioData) contentsPayload.push(newAudioData);
 
         // send data and prompt to Gemini
         // switched to explicitly giving response schema since it refused to work with zod
         const result = await generateWithRetry({
             model: "gemini-2.5-flash",
-            contents: [prompt, ...newImageData, newAudioData].filter(item => item !== null), // do filter to filter out newAudioData if user didn't upload any audio
+            contents: contentsPayload,
             config: {
                 responseMimeType: "application/json",
                 responseSchema: {
