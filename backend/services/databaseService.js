@@ -75,7 +75,7 @@ const getCommunityFeed = async () => {
         // collectionGroup searches every subcollection named 'diagnoses'
         const latestDiagnosesQueryResult = await db.collectionGroup('Diagnoses')
             .orderBy('timestamp', 'desc')
-            .limit(9)
+            .limit(18)
             .get();
 
         if (latestDiagnosesQueryResult.empty) {
