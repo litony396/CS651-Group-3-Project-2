@@ -31,26 +31,25 @@ export default function Dashboard({ user }) {
     const selectedPlant = userPlants.find((p) => p.id === selectedPlantID);
     const hasName = Boolean(selectedPlant?.name);
 
-    useEffect(() => {
-        // have to write separate function because useEffect cannot do fetch since it cannot be async
-        const fetchPlants = async () => {
-            try {
-                // make a query for the user's plants
-                const res = await fetch(`/api/plants/${user.uid}`)
-                if (!res.ok) {
-                    throw new Error(`/api/plants gave: ${res.status}`)
-                }
-                const data = await res.json()
-                setUserPlants(data.plants || []);
-                setPlantsIsLoaded(true);
-            } catch (err) {
-                console.error(`Failed to load plants for ${user.uid}$`, err);
-                setPlantsIsLoaded(false);
+    // fetches plantNames and IDs from database
+    const fetchPlants = async () => {
+        try {
+            // make a query for the user's plants
+            const res = await fetch(`/api/plants/${user.uid}`)
+            if (!res.ok) {
+                throw new Error(`/api/plants gave: ${res.status}`)
             }
-        };
+            const data = await res.json()
+            setUserPlants(data.plants || []);
+            setPlantsIsLoaded(true);
+        } catch (err) {
+            console.error(`Failed to load plants for ${user.uid}$`, err);
+            setPlantsIsLoaded(false);
+        }
+    };
 
+    useEffect(() => {
         fetchPlants();
-
     }, [user.uid]);
 
     // fetch history when drop down selection changes
@@ -125,6 +124,9 @@ export default function Dashboard({ user }) {
             }
 
             const data = await response.json();
+
+            // sync local array with database (prevents a crash)
+            await fetchUserPlants()
 
             // if this is a new plant, then set the plantID to the new generated one
             if (!selectedPlantID) {
