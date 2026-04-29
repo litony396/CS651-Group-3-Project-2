@@ -135,6 +135,8 @@ export default function Dashboard({ user }) {
                 setHistory(historyData.history || []);
             } catch (err) {
                 console.error(`Failed to fetch fresh history`, err);
+            } finally {
+                setIsLoadingHistory(false);
             }
 
 
