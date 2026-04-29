@@ -110,7 +110,7 @@ const getPlantHistory = async (userID, plantID) => {
 }
 
 // make a new diagnosis record for given plant
-const saveNewDiagnosis = async (userID, plantID, diagnosisText, audioURL, imageURLs) => {
+const saveNewDiagnosis = async (userID, plantID, plantName, diagnosisText, audioURL, imageURLs) => {
     try {
         // get DiagnosisNumber for this diagnosis
         const nextDiagnosisNumber = await getNextDiagnosisNumber(userID, plantID);
@@ -118,14 +118,23 @@ const saveNewDiagnosis = async (userID, plantID, diagnosisText, audioURL, imageU
         // explicitly creates the plant document so that getUserPlants can actually iterate through a user's plants to get the plantID
         // Firebase doesn't explicitly create the Plants collection unless it is told to
         // it will just save the record and pretend that it is stored in this path when it doesn't actually exist
+
+        // information for plant doc
+        const plantDocumentData = {
+            id: plantID,
+            lastActivity: admin.firestore.FieldValue.serverTimestamp()
+        }
+
+        // only attach name if it exists, don't want to have a name field if we don't have to
+        if (plantName) {
+            plantDocumentData.name = plantName;
+        }
+
         await db.collection('Users')
             .doc(userID)
             .collection('Plants')
             .doc(plantID)
-            .set( {
-                id: plantID,
-                lastActivity: admin.firestore.FieldValue.serverTimestamp()
-            }, { merge: true })
+            .set(plantDocumentData , { merge: true })
 
         // build the new record with input data
         const newRecord = {

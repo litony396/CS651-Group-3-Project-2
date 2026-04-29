@@ -17,12 +17,19 @@ export default function Dashboard({ user }) {
     const [userPlants, setUserPlants] = useState([]);
     // stores currently selected plant
     const [selectedPlantID, setSelectedPlantID] = useState("");
+    // name of the plant if it exists
+    const [plantName, setPlantName] = useState("");
     // plant history for the selected plant
     const [history, setHistory] = useState([]);
     // used to display different stuff while plant history is being loaded in
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
     // error state to tell user their plants didn't load
     const [plantsIsLoaded, setPlantsIsLoaded] = useState(true);
+
+    // used to track whether the selected plant has a name
+    // make it a const instead of basing it off of plantName because when you type your first letter into plantName, it'll disable the entry form
+    const selectedPlant = userPlants.find((p) => p.id === selectedPlantID);
+    const hasName = Boolean(selectedPlant && selectedPlant.name);
 
     useEffect(() => {
         // have to write separate function because useEffect cannot do fetch since it cannot be async
@@ -51,8 +58,13 @@ export default function Dashboard({ user }) {
         // Check for empty string (New Plant) or missing UID
         if (!selectedPlantID) {
             setHistory([]);
+            setPlantName("");
             return;
         }
+
+        // set the plant name to the one we want
+        const plant = userPlants.find(p => p.plantID === selectedPlantID);
+        setPlantName(plant.name || "");
 
         const fetchHistory = async () => {
             setIsLoadingHistory(true);
@@ -73,7 +85,7 @@ export default function Dashboard({ user }) {
 
         fetchHistory();
 
-    }, [selectedPlantID, user.uid]);
+    }, [selectedPlantID, user.uid, userPlants]);
 
 
 
@@ -87,6 +99,11 @@ export default function Dashboard({ user }) {
             // plantID defaults to "" if no plant selected
             formData.append('userID', user.uid);
             formData.append('plantID', selectedPlantID);
+
+            // if this is a plant without a name, then allow name change
+            if (!hasName && plantName.trim() !== "") {
+                formData.append('plantName', plantName.trim());
+            }
 
             selectedImages.forEach((image) => {
                 formData.append('image', image);
@@ -118,6 +135,8 @@ export default function Dashboard({ user }) {
             setHistory(prevHistory => [data.diagnosisRecord, ...prevHistory])
 
             // TODO: Figure out how to reset the upload fields late, need to be able to communicate with image and audio selector
+            setPlantName("")
+
         } catch (error) {
             console.error("Diagnosis Failed: ", error);
             // https://developer.mozilla.org/en-US/docs/Web/API/Window/alert
@@ -148,7 +167,7 @@ export default function Dashboard({ user }) {
                         <option value="">Register a New Plant</option>
                         {userPlants.map(plant => (
                             <option key={plant.id} value={plant.id}>
-                                {`Plant ID: ${plant.id}`}
+                                {plant.name || `Plant ID: ${plant.id}`}
                             </option>
                         ))}
                     </select>
@@ -159,6 +178,17 @@ export default function Dashboard({ user }) {
                 )}
             </div>
 
+            {/* Plant Name Input */}
+            <div style={{ marginTop: '15px' }}>
+                <input
+                    type="text"
+                    className="plantNameInput"
+                    placeholder={hasName ? "" : "Give this plant a name (Optional)"}
+                    value={plantName}
+                    onChange={(e) => setPlantName(e.target.value)}
+                    disabled={hasName}
+                />
+            </div>
 
             {/* Handle Images and Audio */}
             <div className="inputSection">

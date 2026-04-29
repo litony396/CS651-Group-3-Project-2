@@ -16,7 +16,7 @@ router.post('/', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image',
     try {
         // extract userID and plantID from the request
         // plantID should be mutable since if it doesn't exist, we have to generate a new one
-        const { userID } = req.body;
+        const { userID, plantName } = req.body;
         let { plantID } = req.body;
 
         // extract audio files and image files from request
@@ -43,7 +43,6 @@ router.post('/', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image',
         }
 
         // upload image files
-        // TODO: need to implement only doing this with local uploads, can keep Google Photo urls the same
         // https://stackoverflow.com/questions/40140149/use-async-await-with-array-map
         // have to use Promise.all if doing a map with an async function
         const imageURLs = await Promise.all(imageFiles.map(img =>
@@ -58,7 +57,7 @@ router.post('/', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image',
 
         const diagnosisText = await generateDiagnosis(imageURLs, audioURL, reversePlantHistory);
 
-        const newRecord = await saveNewDiagnosis(userID, plantID, diagnosisText, audioURL, imageURLs);
+        const newRecord = await saveNewDiagnosis(userID, plantID, plantName, diagnosisText, audioURL, imageURLs);
 
         res.status(201).json({
             plantID: plantID,

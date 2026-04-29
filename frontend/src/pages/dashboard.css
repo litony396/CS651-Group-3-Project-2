@@ -237,3 +237,24 @@ html, body {
     background-color: rgba(155, 34, 66, 0.05);
     border-radius: 6px;
 }
+
+/* --- Plant Name Input --- */
+.plantNameInput {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 250px;
+    font-family: inherit;
+    background-color: #fff;
+    color: #000;
+    cursor: text;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Automatically applies when the input is locked by React */
+.plantNameInput:disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+    border-color: #e0e0e0;
+}
