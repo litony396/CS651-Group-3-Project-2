@@ -5,8 +5,9 @@ const app = express();
 const diagnoseRoute = require('./routes/diagnoseRoute.js')
 
 // setup app for routing
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// while debugging, Gemini said to add larger request size limits since we are sending media
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // route to diagnosis
 app.use('/api/diagnose', diagnoseRoute);
