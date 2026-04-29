@@ -16,7 +16,7 @@ app.use('/api/diagnose', diagnoseRoute);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Catch-all route: send any unknown requests to the React app
-app.get('*', (req, res) => {
+app.get('(.*)', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
