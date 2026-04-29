@@ -89,7 +89,7 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
             ).describe("A list of individual tips to prevent the condition from happening to this plant in the future.")
         });
 
-// 2. Build the Interleaved Payload Array
+        // payload that is built gradually and given to Gemini at the end
         const contentsPayload = [];
 
         contentsPayload.push(`
