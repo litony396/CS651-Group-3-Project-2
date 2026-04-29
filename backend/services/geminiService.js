@@ -1,6 +1,5 @@
 const { GoogleGenAI } = require('@google/genai')
 const { z } = require('zod');
-const { zodToJsonSchema }  = require('zod-to-json-schema');
 
 // initialize with API key
 const genAI = new GoogleGenAI({apiKey : process.env.GEMINI_API_KEY});
@@ -75,7 +74,7 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
             contents: [prompt, ...newImageData, newAudioData],
             config: {
                 responseMimeType: "application/json",
-                responseJsonSchema: zodToJsonSchema(diagnosisSchema)
+                responseSchema: diagnosisSchema
             }
         });
 
