@@ -31,6 +31,40 @@ const urlToBytes = async (url) => {
 
 }
 
+// helper function to sleep for a little bit
+const sleep  = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// used to retry Gemini call multiple times after short delay
+// this is because Gemini tends to say it is too busy and cancel the call, so just retry a few times in order to make it work
+// if it doesn't work then error'
+// written with Gemini
+const generateWithRetry = async (requestConfig, maxRetries = 4) => {
+    let attempt = 0;
+
+    while (attempt < maxRetries) {
+        try {
+            // attempt to call API
+            return await genAI.models.generateContent(requestConfig);
+        } catch (error) {
+            // if the error is a 503 (Busy) or 429 (Rate Limited), we retry
+            if (error.status === 503 || error.status === 429) {
+                attempt++;
+                if (attempt >= maxRetries) {
+                    console.error(`Gemini API failed after ${maxRetries} attempts.`);
+                    throw error;
+                }
+
+                // exponential backoff: 1000ms, then 2000ms, then 4000ms
+                const delay = Math.pow(2, attempt) * 1000;
+                console.warn(`Gemini API busy. Retrying in ${delay}ms... (Attempt ${attempt} of ${maxRetries})`);
+                await sleep(delay);
+            } else {
+                throw error;
+            }
+        }
+    }
+};
+
 const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
     try {
         // turn urls into data
@@ -71,7 +105,7 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
 
         // send data and prompt to Gemini
         // switched to explicitly giving response schema since it refused to work with zod
-        const result = await genAI.models.generateContent({
+        const result = await generateWithRetry({
             model: "gemini-2.5-flash",
             contents: [prompt, ...newImageData, newAudioData].filter(item => item !== null), // do filter to filter out newAudioData if user didn't upload any audio
             config: {
