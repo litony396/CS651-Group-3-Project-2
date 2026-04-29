@@ -143,7 +143,7 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
         // send data and prompt to Gemini
         // switched to explicitly giving response schema since it refused to work with zod
         const result = await generateWithRetry({
-            model: "gemini-2.5-flash",
+            model: "gemini-3-flash-preview",
             contents: contentsPayload,
             config: {
                 responseMimeType: "application/json",
