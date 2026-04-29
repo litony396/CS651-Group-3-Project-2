@@ -109,9 +109,6 @@ export default function Dashboard({ user }) {
 
             const data = await response.json();
 
-            // sync local array with database (prevents a crash)
-            await fetchUserPlants()
-
             // if this is a new plant, then set the plantID to the new generated one
             if (!selectedPlantID) {
                 setSelectedPlantID(data.plantID);
