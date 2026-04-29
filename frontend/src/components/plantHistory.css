@@ -62,3 +62,86 @@
     padding-top: 15px;
     border-top: 1px dashed #eaeaea; /* Adds a subtle visual break after the images */
 }
+
+.coreDiagnosis h2 {
+    font-size: 1.8rem;
+    color: #1a1a1a;
+    margin: 0 0 10px 0;
+}
+
+.coreDiagnosis p {
+    font-size: 1rem;
+    color: #4a4a4a;
+    margin: 0;
+}
+
+.divider {
+    border: 0;
+    height: 1px;
+    background-color: #eaeaea;
+    margin: 25px 0;
+}
+
+/* Two-column layout for the diagnosis details */
+.diagnosisDetails {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.actionSteps {
+    flex: 1;
+    min-width: 300px;
+}
+
+.treatmentBlock h3, .preventionBlock h3 {
+    font-size: 1.1rem;
+    color: #1a1a1a;
+    margin-bottom: 15px;
+    border-left: 3px solid #1a4d2e; /* Dark green accent line */
+    padding-left: 10px;
+}
+
+.treatmentList {
+    padding-left: 20px;
+    margin-bottom: 30px;
+    color: #4a4a4a;
+    line-height: 1.6;
+}
+
+.treatmentList li {
+    margin-bottom: 12px;
+}
+
+.preventionList {
+    padding-left: 20px;
+    list-style-type: disc;
+    color: #4a4a4a;
+    line-height: 1.6;
+}
+
+.preventionList li {
+    margin-bottom: 10px;
+}
+
+/* Right column with the tinted background */
+.explanationSection {
+    flex: 1;
+    min-width: 300px;
+    background-color: #f7f9ee; /* Very light tinted box */
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.explanationSection h3 {
+    font-size: 1.1rem;
+    color: #1a1a1a;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.explanationText {
+    color: #4a4a4a;
+    line-height: 1.7;
+    margin: 0;
+}
