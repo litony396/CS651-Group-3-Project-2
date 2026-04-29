@@ -132,8 +132,6 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
             }
         });
 
-        console.log("Raw Gemini Output:", result.text);
-
         // use zod schema to make sure that the final JSON returned is correct
         return diagnosisSchema.parse(JSON.parse(result.text));
     } catch (error) {
