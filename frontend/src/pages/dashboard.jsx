@@ -111,13 +111,32 @@ export default function Dashboard({ user }) {
 
             const data = await response.json();
 
+            // getting errors when trying to update data after successful diagnosis
+            // instead just fetch the data with api calls to make sure data is always correctly formatted
+
             // if this is a new plant, then set the plantID to the new generated one
             if (!selectedPlantID) {
+                // update dropdown menu
+                try {
+                    const plantRes = await fetch(`/api/plants/${user.uid}`);
+                    const plantData = await plantRes.json()
+                    setUserPlants(plantData.plants || []);
+                } catch (err) {
+                    console.error(`Failed to update dropdown for ${user.uid}$`, err);
+                }
                 setSelectedPlantID(data.plantID);
             }
 
-            // add new record to timeline
-            setHistory(prevHistory => [data.diagnosisRecord, ...prevHistory])
+            // grab new history from database
+            try {
+                setIsLoadingHistory(true);
+                const historyRes = await fetch(`api/plants/${user.uid}/history?plantID=${data.plantID}`);
+                const historyData = await historyRes.json();
+                setHistory(historyData.history || []);
+            } catch (err) {
+                console.error(`Failed to fetch fresh history`, err);
+            }
+
 
             // TODO: Figure out how to reset the upload fields late, need to be able to communicate with image and audio selector
         } catch (error) {
