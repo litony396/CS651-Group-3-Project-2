@@ -1,11 +1,6 @@
 
-// import admin which was initialized earlier
-// the admin is used to perform operations on the firebase we set up
-const { admin } = require('../firebase.js');
-
-// load bucket used for audio storage from Firebase storage
-const BUCKET_NAME = 'plantcareai-f1498.firebasestorage.app';
-const bucket = admin.storage().bucket(BUCKET_NAME);
+// load bucket used for image/audio storage from Firebase storage
+const { bucket } = require('../firebase.js');
 
 // function that uploads image or audio to Firebase bucket
 const uploadFile = async (data, fileName, userID, fileType) => {

@@ -1,16 +1,21 @@
 const admin = require('firebase-admin');
-// import service account credentials
-// TODO: Have to change later for when this is actually deployed -> won't use local file for authentication
-const serviceAccount = require('./serviceAccountKey.json');
 
-// initialize admin using imported credentials
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
+try {
+    // initialize admin using Application Default Credentials
+    admin.initializeApp({
+        storageBucket: 'plantcareai-f1498.firebasestorage.app'
+    });
+
+    console.log("Firestore successfully initialized.");
+} catch (error) {
+    console.error("Firebase Intitialization Error: ", error);
+}
+
 
 // make database instance for other files to use
 const db = admin.firestore();
+// load bucket instance for other files to use
+const bucket = admin.storage().bucket();
 
-console.log("Firestore successfully initialized.");
 
-module.exports = { db, admin };
+module.exports = { db, admin, bucket };
