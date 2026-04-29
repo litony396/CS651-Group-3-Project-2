@@ -34,7 +34,7 @@ export default function Dashboard({ user }) {
                     throw new Error(`/api/plants gave: ${res.status}`)
                 }
                 const data = await res.json()
-                setUserPlants(data.plantIDs || []);
+                setUserPlants(data.plants || []);
                 setPlantsIsLoaded(true);
             } catch (err) {
                 console.error(`Failed to load plants for ${user.uid}$`, err);
