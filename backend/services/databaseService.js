@@ -146,7 +146,7 @@ const getPlantHistory = async (userID, plantID) => {
 }
 
 // make a new diagnosis record for given plant
-const saveNewDiagnosis = async (userID, plantID, diagnosisText, audioURL, imageURLs) => {
+const saveNewDiagnosis = async (userID, plantID, plantName, diagnosisText, audioURL, imageURLs) => {
     try {
         // get DiagnosisNumber for this diagnosis
         const nextDiagnosisNumber = await getNextDiagnosisNumber(userID, plantID);
@@ -159,6 +159,11 @@ const saveNewDiagnosis = async (userID, plantID, diagnosisText, audioURL, imageU
         const plantDocumentData = {
             id: plantID,
             lastActivity: admin.firestore.FieldValue.serverTimestamp()
+        }
+
+        // only attach name if it exists, don't want to have a name field if we don't have to
+        if (plantName) {
+            plantDocumentData.name = plantName;
         }
 
         await db.collection('Users')

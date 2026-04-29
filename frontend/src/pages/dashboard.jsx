@@ -17,6 +17,8 @@ export default function Dashboard({ user }) {
     const [userPlants, setUserPlants] = useState([]);
     // stores currently selected plant
     const [selectedPlantID, setSelectedPlantID] = useState("");
+    // plantName in user input section to display when user types it
+    const [plantName, setPlantName] = useState("");
     // plant history for the selected plant
     const [history, setHistory] = useState([]);
     // used to display different stuff while plant history is being loaded in
@@ -24,27 +26,30 @@ export default function Dashboard({ user }) {
     // error state to tell user their plants didn't load
     const [plantsIsLoaded, setPlantsIsLoaded] = useState(true);
 
+    // used to track whether the selected plant has a name
+    // make it a const instead of basing it off of plantName because when you type your first letter into plantName, it'll disable the entry form
+    const selectedPlant = userPlants.find((p) => p.plantID === selectedPlantID);
+    const hasName = Boolean(selectedPlant?.name);
 
+    // fetches plantNames and IDs from database
+    const fetchPlants = async () => {
+        try {
+            // make a query for the user's plants
+            const res = await fetch(`/api/plants/${user.uid}`)
+            if (!res.ok) {
+                throw new Error(`/api/plants gave: ${res.status}`)
+            }
+            const data = await res.json()
+            setUserPlants(data.plants || []);
+            setPlantsIsLoaded(true);
+        } catch (err) {
+            console.error(`Failed to load plants for ${user.uid}$`, err);
+            setPlantsIsLoaded(false);
+        }
+    };
 
 
     useEffect(() => {
-        // fetches plantNames and IDs from database
-        const fetchPlants = async () => {
-            try {
-                // make a query for the user's plants
-                const res = await fetch(`/api/plants/${user.uid}`)
-                if (!res.ok) {
-                    throw new Error(`/api/plants gave: ${res.status}`)
-                }
-                const data = await res.json()
-                setUserPlants(data.plants || []);
-                setPlantsIsLoaded(true);
-            } catch (err) {
-                console.error(`Failed to load plants for ${user.uid}$`, err);
-                setPlantsIsLoaded(false);
-            }
-        };
-
         fetchPlants();
     }, [user.uid]);
 
@@ -53,8 +58,13 @@ export default function Dashboard({ user }) {
         // Check for empty string (New Plant) or missing UID
         if (!selectedPlantID) {
             setHistory([]);
+            setPlantName("")
             return;
         }
+
+        // set the plant name to the one we want
+        const plant = userPlants.find(p => p.plantID === selectedPlantID);
+        setPlantName(plant?.name || "");
 
         const fetchHistory = async () => {
             setIsLoadingHistory(true);
@@ -90,6 +100,11 @@ export default function Dashboard({ user }) {
             formData.append('userID', user.uid);
             formData.append('plantID', selectedPlantID);
 
+            // if this is a plant without a name, then allow name change
+            if (!hasName && plantName.trim() !== "") {
+                formData.append('plantName', plantName.trim());
+            }
+
             selectedImages.forEach((image) => {
                 formData.append('image', image);
             })
@@ -117,13 +132,7 @@ export default function Dashboard({ user }) {
             // if this is a new plant, then set the plantID to the new generated one
             if (!selectedPlantID) {
                 // update dropdown menu
-                try {
-                    const plantRes = await fetch(`/api/plants/${user.uid}`);
-                    const plantData = await plantRes.json()
-                    setUserPlants(plantData.plants || []);
-                } catch (err) {
-                    console.error(`Failed to update dropdown for ${user.uid}$`, err);
-                }
+                fetchPlants();
                 setSelectedPlantID(data.plantID);
             }
 
@@ -141,6 +150,7 @@ export default function Dashboard({ user }) {
 
 
             // TODO: Figure out how to reset the upload fields late, need to be able to communicate with image and audio selector
+            setPlantName("")
         } catch (error) {
             console.error("Diagnosis Failed: ", error);
             // https://developer.mozilla.org/en-US/docs/Web/API/Window/alert
@@ -171,7 +181,7 @@ export default function Dashboard({ user }) {
                         <option value="">Register a New Plant</option>
                         {userPlants.map(plant => (
                             <option key={plant.id} value={plant.id}>
-                                {`Plant ID: ${plant.id}`}
+                                {plant?.name || `Plant ID: ${plant.id}`}
                             </option>
                         ))}
                     </select>
@@ -180,6 +190,18 @@ export default function Dashboard({ user }) {
                         Error loading your plants. Try refreshing. You can still register a new one below.
                     </span>
                 )}
+            </div>
+
+            {/* Plant Name Input */}
+            <div className="nameInputWrapper">
+                <input
+                    type="text"
+                    className="plantNameInput"
+                    placeholder={hasName ? "" : "Give this plant a name (Optional)"}
+                    value={plantName}
+                    onChange={(e) => setPlantName(e.target.value)}
+                    disabled={hasName}
+                />
             </div>
 
             {/* Handle Images and Audio */}
