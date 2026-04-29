@@ -11,12 +11,18 @@ export default function Dashboard({ user }) {
     const [diagnosis, setDiagnosis] = useState(null);
     // isDiagnosing boolean is used to display different stuff while the backend is diagnosing
     const [isDiagnosing, setIsDiagnosing] = useState(false);
+    // stores currently selected plant
+    const [selectedPlantID, setSelectedPlantID] = useState(null);
 
     const handlePlantDiagnosis = async () => {
         setIsDiagnosing(true);
         try {
             // form data used to handle photo and audio uploads to the backend
             const formData = new FormData();
+
+            // add user id and plant id to the request
+            formData.append('userID', user.id);
+            formData.append('plantID', selectedPlantID || "");
 
             selectedImages.forEach((image) => {
                 formData.append('image', image);
@@ -38,7 +44,13 @@ export default function Dashboard({ user }) {
             }
 
             const data = await response.json();
-            setDiagnosis(data);
+
+            // if this is a new plant, then set the plantID to the new generated one
+            if (!selectedPlantID) {
+                setSelectedPlantID(data.plantID);
+            }
+
+            setDiagnosis(data.diagnosisRecord);
         } catch (error) {
             console.error("Diagnosis Failed: ", error);
             // https://developer.mozilla.org/en-US/docs/Web/API/Window/alert

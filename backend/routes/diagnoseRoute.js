@@ -60,7 +60,10 @@ router.post('/', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image',
 
         const newRecord = await saveNewDiagnosis(userID, plantID, diagnosisText, audioURL, imageURLs);
 
-        res.status(201).json(newRecord)
+        res.status(201).json({
+            plantID: plantID,
+            diagnosisRecord: newRecord
+        })
 
     } catch (error) {
         console.error("Error when trying to use /api/diagnose", error);
