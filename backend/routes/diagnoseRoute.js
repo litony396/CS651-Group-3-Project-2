@@ -21,7 +21,7 @@ router.post('/', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image',
 
         // extract audio files and image files from request
         // give safe defaults for if the audioFile or imageFiles do not exist
-        const audioFile = req.files['audio'] ? req.files['audio'] : null;
+        const audioFile = req.files['audio'] ? req.files['audio'][0] : null;
         const imageFiles = req.files['image'] || [];
         if (!audioFile && imageFiles.length === 0) {
             return res.status(400).json({error: 'Must upload at least one image or audio file.'})
@@ -56,7 +56,7 @@ router.post('/', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image',
         // reverse because diagnosis for Gemini is easier if its in chronological order instead of reverse chronological error
         const reversePlantHistory = plantHistory.reverse();
 
-        const diagnosisText = generateDiagnosis(imageURLs, audioURL, reversePlantHistory);
+        const diagnosisText = await generateDiagnosis(imageURLs, audioURL, reversePlantHistory);
 
         const newRecord = await saveNewDiagnosis(userID, plantID, diagnosisText, audioURL, imageURLs);
 
