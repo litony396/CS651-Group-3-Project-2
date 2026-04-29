@@ -89,19 +89,54 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
             ).describe("A list of individual tips to prevent the condition from happening to this plant in the future.")
         });
 
-        // provide context from previous diagnoses
-        const pastDiagnosisContext = plantHistory.length > 0
-            ? `Past Diagnoses:\n ${plantHistory.map(d => `Diagnosis ${d.diagnosisNumber} (${d.timestamp}): ${JSON.stringify(d.generatedDiagnosis)}`).join('\n')}`
-            : 'This is a new plant with no medical history.';
+// 2. Build the Interleaved Payload Array
+        const contentsPayload = [];
 
-        const prompt = `
+        contentsPayload.push(`
             You are an expert plant pathologist and entomologist.
             Your job is to analyze the provided information about the plant in order to diagnose any diseases or pest infestations present in the plant and how to fix them.
-            You may be given images of the plant, audio describing the status of the plant and/or how it is cared for, and any past diagnoses you have produced for this plant.
-            
-            Here is the plant's past diagnoses in order to give you context:
-            ${pastDiagnosisContext}
-        `
+        `);
+
+        // assumes plantHistory is chronological (oldest to newest), the last item is n-1
+        // want to include the images/audio from this n-1 entry
+        // only include the n-1 entry because don't want to give too much context as this eats up tokens + giving too much can make Gemini confused
+        if (plantHistory && plantHistory.length > 0) {
+            const nMinusOne = plantHistory[plantHistory.length - 1];
+
+            // older text history (everything before n-1) to save tokens
+            if (plantHistory.length > 1) {
+                const olderHistory = plantHistory.slice(0, plantHistory.length - 1);
+                contentsPayload.push(`
+                    --- OLDER MEDICAL HISTORY ---
+                    ${olderHistory.map(d => `Diagnosis ${d.diagnosisNumber} (${d.timestamp}): ${JSON.stringify(d.generatedDiagnosis)}`).join('\n')}
+                `);
+            }
+
+            // n-1 visual/audio context
+            contentsPayload.push(`
+                --- PREVIOUS CHECKUP (Diagnosis ${nMinusOne.diagnosisNumber}) ---
+                Previous Diagnosis Result: ${JSON.stringify(nMinusOne.generatedDiagnosis)}
+                Review these past images/audio (if any) to establish a baseline:
+            `);
+
+            // fetch and append n-1 Media
+            if (nMinusOne.imageURLs && nMinusOne.imageURLs.length > 0) {
+                const pastImages = await Promise.all(nMinusOne.imageURLs.map(urlToBytes));
+                contentsPayload.push(...pastImages.filter(Boolean));
+            }
+            if (nMinusOne.audioURL) {
+                const pastAudio = await urlToBytes(nMinusOne.audioURL);
+                if (pastAudio) contentsPayload.push(pastAudio);
+            }
+        } else {
+            contentsPayload.push('--- MEDICAL HISTORY ---\nThis is a new plant with no medical history. Establish a baseline.');
+        }
+
+        // new data
+        contentsPayload.push(`
+            --- CURRENT CHECKUP (Today) ---
+            Compare this data to the baseline above (if available), determine what has changed, and give next steps.
+        `);
 
         // send data and prompt to Gemini
         // switched to explicitly giving response schema since it refused to work with zod
