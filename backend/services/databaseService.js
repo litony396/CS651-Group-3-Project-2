@@ -149,7 +149,12 @@ const saveNewDiagnosis = async (userID, plantID, diagnosisText, audioURL, imageU
             .doc(String(nextDiagnosisNumber))
             .set(newRecord);
 
-        return newRecord;
+        // overwrite timestamp with the current time instead since admin.firestore.FieldValue.serverTimestamp() doesn't set until it reaches the database
+        // this will cause a bug on the date display on the dashboard for the latest entry
+        return {
+            newRecord,
+            timestamp: new Date().toISOString()
+        };
     } catch (error) {
         console.error("Database Save Error: ", error);
         throw new Error("Diagnosis Failed to Save to the Database");

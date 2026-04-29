@@ -7,6 +7,7 @@ const plantsRoute = require('./routes/plantsRoute.js')
 
 // setup app for routing
 // while debugging, Gemini said to add larger request size limits since we are sending media
+// TODO: Make an error message if these limits are reached
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
