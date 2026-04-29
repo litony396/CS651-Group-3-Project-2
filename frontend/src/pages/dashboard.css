@@ -198,3 +198,42 @@ html, body {
     line-height: 1.7;
     margin: 0;
 }
+
+/* --- Plant Selection Section --- */
+.plantSelectionContainer {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.plantLabel {
+    font-weight: bold;
+    margin-right: 15px;
+    font-size: 1.1rem;
+    color: #1a4d2e; /* Dark green matching your headers */
+}
+
+.plantDropdown {
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+    font-family: inherit; /* Ensures it uses the font defined at the top of dashboard.css */
+}
+
+.plantDropdown:focus {
+    outline: none;
+    border-color: #1a4d2e;
+    box-shadow: 0 0 0 2px rgba(26, 77, 46, 0.1);
+}
+
+.plantLoadError {
+    color: #9b2242; /* Matching your crimson button color */
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: inline-block;
+    padding: 8px 12px;
+    background-color: rgba(155, 34, 66, 0.05);
+    border-radius: 6px;
+}
