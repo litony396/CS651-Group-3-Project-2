@@ -62,7 +62,7 @@ export default function CommunityFeed() {
 
         return (
             <div className="communityFeedContainer">
-                {/* Applied the .backButton class */}
+                {/* back button */}
                 <button
                     onClick={() => setSelectedPlantOwner(null)}
                     className="backButton"
@@ -70,7 +70,7 @@ export default function CommunityFeed() {
                     ← Back to Community Feed
                 </button>
 
-                <h2>Plant History</h2>
+                <h2>Plant History: {selectedPlantOwner.name || selectedPlantOwner.plantID}</h2>
 
                 <div className="ownerInfo">
                     <strong>Owner UID:</strong> {maskedUID}

@@ -69,7 +69,7 @@ const getUserPlants = async (userID) => {
     }
 }
 
-// collects 9 newest diagnoses to populate the community feed
+// collects 18 newest diagnoses to populate the community feed
 const getCommunityFeed = async () => {
     try {
         // collectionGroup searches every subcollection named 'diagnoses'
@@ -82,23 +82,28 @@ const getCommunityFeed = async () => {
             return [];
         }
 
-        return latestDiagnosesQueryResult.docs.map(doc => {
+        return await Promise.all(latestDiagnosesQueryResult.docs.map(async doc => {
             const data = doc.data();
 
             // extract the user/plant IDs directly from the Firestore path
             // schema: Users/{userID}/Plants/{plantID}/Diagnoses/{diagnosisID}
-            const plantID = doc.ref.parent.parent.id;
+            const plantRef = doc.ref.parent.parent;
             const userID = doc.ref.parent.parent.parent.parent.id;
+
+            // ask the Plant document to get the name if it exists
+            const plantQueryResult = await plantRef.get();
+            const plantName = plantQueryResult.exists ? plantQueryResult.data().name : null;
 
             return {
                 id: doc.id,
                 userID: userID,
-                plantID: plantID,
+                plantID: plantRef.id,
+                name: plantName,
                 ...data,
                 // Ensure the timestamp is readable for the React frontend
                 timestamp: data.timestamp ? data.timestamp.toDate().toISOString() : new Date().toISOString()
             };
-        });
+        }));
     } catch (error) {
         console.error("Error fetching community diagnoses: ", error);
         throw new Error("Failed to retrieve global feed.");

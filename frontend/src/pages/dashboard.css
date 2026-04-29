@@ -121,8 +121,8 @@ html, body {
     display: flex;
     flex-direction: column; /* Stacks the dropdown and name input vertically */
     align-items: center;    /* Centers all children horizontally */
-    gap: 15px;              /* Provides consistent spacing between elements */
-    margin-bottom: 30px;
+    gap: 30px;              /* Space BETWEEN Dropdown and Name Input */
+    margin-bottom: 30px;    /* Space BEFORE the Audio/Image section */
 }
 
 /* Adjust the label to remove side margins for perfect centering */

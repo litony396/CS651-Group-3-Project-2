@@ -28,7 +28,7 @@ export default function Dashboard({ user }) {
 
     // used to track whether the selected plant has a name
     // make it a const instead of basing it off of plantName because when you type your first letter into plantName, it'll disable the entry form
-    const selectedPlant = userPlants.find((p) => p.plantID === selectedPlantID);
+    const selectedPlant = userPlants.find((p) => p.id === selectedPlantID);
     const hasName = Boolean(selectedPlant?.name);
 
     // fetches plantNames and IDs from database
@@ -63,7 +63,7 @@ export default function Dashboard({ user }) {
         }
 
         // set the plant name to the one we want
-        const plant = userPlants.find(p => p.plantID === selectedPlantID);
+        const plant = userPlants.find(p => p.id === selectedPlantID);
         setPlantName(plant?.name || "");
 
         const fetchHistory = async () => {
@@ -129,10 +129,11 @@ export default function Dashboard({ user }) {
             // getting errors when trying to update data after successful diagnosis
             // instead just fetch the data with api calls to make sure data is always correctly formatted
 
+            // update dropdown menu
+            await fetchPlants();
+
             // if this is a new plant, then set the plantID to the new generated one
             if (!selectedPlantID) {
-                // update dropdown menu
-                fetchPlants();
                 setSelectedPlantID(data.plantID);
             }
 
