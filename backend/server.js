@@ -3,6 +3,7 @@ const path = require('path');
 const app = express();
 
 const diagnoseRoute = require('./routes/diagnoseRoute.js')
+const plantsRoute = require('./routes/plantsRoute.js')
 
 // setup app for routing
 // while debugging, Gemini said to add larger request size limits since we are sending media
@@ -12,8 +13,10 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // route to diagnosis
 app.use('/api/diagnose', diagnoseRoute);
 
-// two lines below are used to
-// Serve the static React files
+// route to get plant list and plant history
+app.use('/api/plants', plantsRoute);
+
+// two lines below are used to serve the static React files and are written by Gemini
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Catch-all route: send any unknown requests to the React app
