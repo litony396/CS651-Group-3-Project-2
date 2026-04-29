@@ -2,6 +2,17 @@
 // load bucket used for image/audio storage from Firebase storage
 const { bucket } = require('../firebase.js');
 
+const { Logging } = require('@google-cloud/logging');
+const logging = new Logging();
+const log = logging.log("storage-requests");
+
+async function logRequest(requestData) {
+    const metadata= { resource: { type: "global" }};
+    const entry = log.entry(metadata, requestData);
+    await log.write(entry)
+}
+
+
 // function that uploads image or audio to Firebase bucket
 const uploadFile = async (data, fileName, userID, fileType) => {
     try {
@@ -20,6 +31,17 @@ const uploadFile = async (data, fileName, userID, fileType) => {
 
         const file = bucket.file(storedFileName);
 
+        try {
+            await logRequest({
+                event: "Cloud Storage Upload Initiated",
+                bucket: bucket.name,
+                fileName: storedFileName,
+                fileType: fileType
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for storage attempt", error);
+        }
+
         // upload the audio to the database
         // also set the metadata so it is known that this is an audio file -> helps Gemini and if we need to playback audio
         await file.save(data,{
@@ -29,9 +51,28 @@ const uploadFile = async (data, fileName, userID, fileType) => {
         // make file public so Gemini can read it
         await file.makePublic();
 
+        const url = `https://storage.googleapis.com/${bucket.name}/${storedFileName}`
+
+        try {
+            await logRequest({
+                event: "Gemini Storage Upload Successful",
+                url: url
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for storage success", error);
+        }
+
         // return URL to store in Firestore + give to Gemini to access
-        return `https://storage.googleapis.com/${bucket.name}/${storedFileName}`
+        return url
     } catch (error) {
+        try {
+            await logRequest({
+                event: "Gemini Storage Upload Failure"
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for storage failure", error);
+        }
+
         console.error("File Upload Error:", error);
         throw new Error(`Upload of ${fileName} to Firebase Bucket Failed.`)
     }

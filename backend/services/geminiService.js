@@ -74,8 +74,8 @@ const generateWithRetry = async (requestConfig, maxRetries = 4) => {
                         reason: error.status === 503 ? "Service Unavailable (503)" : "Rate Limited (429)",
                         delayImposedMs: delay
                     });
-                } catch (e) {
-                    console.warn("Failed to write to log for Gemini Retry")
+                } catch (error) {
+                    console.warn("Failed to write to log for Gemini Retry", error)
                 }
 
                 await sleep(delay);
@@ -187,7 +187,7 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
                 payloadSent: logPayload
             });
         } catch (error) {
-            console.warn("Failed to write to log for Gemini Payload");
+            console.warn("Failed to write to log for Gemini Payload", error);
         }
 
         // send data and prompt to Gemini
@@ -224,7 +224,7 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
                 event: "Gemini Diagnosis Successfully Generated",
             });
         } catch (error) {
-            console.warn("Failed to write to log for Gemini Success");
+            console.warn("Failed to write to log for Gemini Success", error);
         }
 
         // use zod schema to make sure that the final JSON returned is correct
@@ -236,7 +236,7 @@ const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
                 error: error.message
             });
         } catch (error) {
-            console.warn("Failed to write to log for Gemini Failure");
+            console.warn("Failed to write to log for Gemini Failure", error);
         }
 
         console.error("Gemini API Error: ", error);
