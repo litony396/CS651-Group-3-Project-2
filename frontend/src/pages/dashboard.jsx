@@ -25,7 +25,7 @@ export default function Dashboard({ user }) {
     const [plantsIsLoaded, setPlantsIsLoaded] = useState(true);
 
     useEffect(() => {
-        // have to write separate
+        // have to write separate function because useEffect cannot do fetch since it cannot be async
         const fetchPlants = async () => {
             try {
                 // make a query for the user's plants
