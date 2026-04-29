@@ -14,6 +14,11 @@ const urlToBytes = async (url) => {
 
     // fetch data from the url
     const response = await fetch(url);
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch file from Firebase Storage: ${response.status} ${response.statusText}`);
+    }
+
     const buffer = await response.arrayBuffer();
 
     // return in a way Gemini can read

@@ -26,6 +26,9 @@ const uploadFile = async (data, fileName, userID, fileType) => {
             metadata: {contentType: fileType}
         });
 
+        // make file public so Gemini can read it
+        await file.makePublic();
+
         // return URL to store in Firestore + give to Gemini to access
         return `https://storage.googleapis.com/${bucket.name}/${storedFileName}`
     } catch (error) {
