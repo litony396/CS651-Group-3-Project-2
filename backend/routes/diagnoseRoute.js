@@ -16,7 +16,7 @@ router.post('/', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image',
     try {
         // extract userID and plantID from the request
         // plantID should be mutable since if it doesn't exist, we have to generate a new one
-        const { userID, plantName } = req.body;
+        const { userID } = req.body;
         let { plantID } = req.body;
 
         // extract audio files and image files from request
@@ -57,7 +57,7 @@ router.post('/', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image',
 
         const diagnosisText = await generateDiagnosis(imageURLs, audioURL, reversePlantHistory);
 
-        const newRecord = await saveNewDiagnosis(userID, plantID, plantName, diagnosisText, audioURL, imageURLs);
+        const newRecord = await saveNewDiagnosis(userID, plantID, diagnosisText, audioURL, imageURLs);
 
         res.status(201).json({
             plantID: plantID,
