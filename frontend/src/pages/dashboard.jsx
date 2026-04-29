@@ -151,7 +151,6 @@ export default function Dashboard({ user }) {
 
 
             // TODO: Figure out how to reset the upload fields late, need to be able to communicate with image and audio selector
-            setPlantName("")
         } catch (error) {
             console.error("Diagnosis Failed: ", error);
             // https://developer.mozilla.org/en-US/docs/Web/API/Window/alert
@@ -169,40 +168,42 @@ export default function Dashboard({ user }) {
 
             {/* Dropdown for PlantID */}
             <div className="plantSelectionContainer">
-                <label htmlFor="plantSelect" className="plantLabel">
-                    Select Plant:
-                </label>
-                {plantsIsLoaded ? (
-                    <select
-                        id="plantSelect"
-                        value={selectedPlantID}
-                        onChange={(e) => setSelectedPlantID(e.target.value)}
-                        className="plantDropdown"
-                    >
-                        <option value="">Register a New Plant</option>
-                        {userPlants.map(plant => (
-                            <option key={plant.id} value={plant.id}>
-                                {plant?.name || `Plant ID: ${plant.id}`}
-                            </option>
-                        ))}
-                    </select>
-                ) : (
-                    <span className="plantLoadError">
-                        Error loading your plants. Try refreshing. You can still register a new one below.
-                    </span>
-                )}
-            </div>
+                <div className={"dropdownWrapper"}>
+                    <label htmlFor="plantSelect" className="plantLabel">
+                        Select Plant:
+                    </label>
+                    {plantsIsLoaded ? (
+                        <select
+                            id="plantSelect"
+                            value={selectedPlantID}
+                            onChange={(e) => setSelectedPlantID(e.target.value)}
+                            className="plantDropdown"
+                        >
+                            <option value="">Register a New Plant</option>
+                            {userPlants.map(plant => (
+                                <option key={plant.id} value={plant.id}>
+                                    {plant?.name || `Plant ID: ${plant.id}`}
+                                </option>
+                            ))}
+                        </select>
+                    ) : (
+                        <span className="plantLoadError">
+                            Error loading your plants. Try refreshing. You can still register a new one below.
+                        </span>
+                    )}
+                </div>
 
-            {/* Plant Name Input */}
-            <div className="nameInputWrapper">
-                <input
-                    type="text"
-                    className="plantNameInput"
-                    placeholder={hasName ? "" : "Give this plant a name (Optional)"}
-                    value={plantName}
-                    onChange={(e) => setPlantName(e.target.value)}
-                    disabled={hasName}
-                />
+                {/* Plant Name Input */}
+                <div className="nameInputWrapper">
+                    <input
+                        type="text"
+                        className="plantNameInput"
+                        placeholder={hasName ? "" : "Give this plant a name (Optional)"}
+                        value={plantName}
+                        onChange={(e) => setPlantName(e.target.value)}
+                        disabled={hasName}
+                    />
+                </div>
             </div>
 
             {/* Handle Images and Audio */}
