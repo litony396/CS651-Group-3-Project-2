@@ -21,7 +21,7 @@ export default function Dashboard({ user }) {
             const formData = new FormData();
 
             // add user id and plant id to the request
-            formData.append('userID', user.id);
+            formData.append('userID', user.uid);
             formData.append('plantID', selectedPlantID || "");
 
             selectedImages.forEach((image) => {
