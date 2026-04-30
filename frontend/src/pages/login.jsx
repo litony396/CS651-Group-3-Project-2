@@ -12,7 +12,7 @@ export default function Login({ setUser }) {
         document.title = "Login | PlantCareAI";
     }, []);
 
-
+    // use Firebase auth to log user in
     const handleGoogleLogin = async () => {
         setIsLoggingIn(true);
 

@@ -5,6 +5,7 @@ const { trackGA4Event } = require('../analytics');
 const router = express.Router();
 
 // GET /api/plants/community
+// gets records needed for the community feed
 router.get('/community', async (req, res) => {
     try {
         // fetch feed from Firestore
@@ -22,6 +23,7 @@ router.get('/community', async (req, res) => {
 });
 
 // GET /api/plants/:userID
+// gets all of the plants associated with userID
 router.get('/:userID', async (req, res) => {
     try {
         const { userID } = req.params;
@@ -47,6 +49,7 @@ router.get('/:userID', async (req, res) => {
 
 // GET /api/plants/:userID/history
 // Expects 'plantID' to be passed as a URL query parameter
+// gets all the plant history associated with plantID
 router.get('/:userID/history', async (req, res) => {
     try {
         const { userID } = req.params;

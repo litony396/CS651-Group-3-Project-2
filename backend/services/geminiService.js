@@ -86,6 +86,7 @@ const generateWithRetry = async (requestConfig, maxRetries = 4) => {
     }
 };
 
+// generate a diagnosis in desired JSON format given images, audio, and plant history
 const generateDiagnosis = async (imageURLs, audioUrl, plantHistory) => {
     try {
         // turn urls into data

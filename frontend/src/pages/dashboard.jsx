@@ -59,7 +59,7 @@ export default function Dashboard({ user }) {
         }
     };
 
-
+    // fetch plants upon start to populate dropdown
     useEffect(() => {
         fetchPlants();
     }, [user.uid]);
@@ -106,7 +106,7 @@ export default function Dashboard({ user }) {
     }, [selectedPlantID, user.uid, userPlants]);
 
 
-
+    // start a plant diagnosis with selected images and audio
     const handlePlantDiagnosis = async () => {
         setIsDiagnosing(true);
         try {

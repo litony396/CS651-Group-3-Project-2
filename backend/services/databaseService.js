@@ -14,6 +14,7 @@ async function logRequest(requestData) {
 // https://firebase.google.com/docs/firestore/query-data/get-data#get_a_document
 // https://firebase.google.com/docs/firestore/query-data/order-limit-data
 
+// generate a unique plantID
 const generatePlantID = (userID) => {
     // https://firebase.google.com/docs/firestore/manage-data/add-data
     // you can make firestore generate a unique id for a specific collection by asking for a document in that collection with no input
@@ -27,6 +28,7 @@ const generatePlantID = (userID) => {
     return newPlantDoc.id;
 }
 
+// find the next Diagnosis number for given plant
 const getNextDiagnosisNumber = async (userID, plantID) => {
     try {
         // get the diagnoses of the plant we are looking for
@@ -79,6 +81,7 @@ const getNextDiagnosisNumber = async (userID, plantID) => {
     }
 }
 
+// get all the plants associated with this user
 const getUserPlants = async (userID) => {
     try {
         try {
@@ -218,6 +221,7 @@ const getCommunityFeed = async () => {
     }
 }
 
+// get the plantHistory associated with the input plant
 const getPlantHistory = async (userID, plantID) => {
     try {
         // get the diagnoses of the plant we are looking for

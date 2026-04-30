@@ -10,10 +10,12 @@ const { generateDiagnosis } = require('../services/geminiService.js');
 // use multer to store files in memory instead of saving to hard drive of the system
 const upload = multer({ storage: multer.memoryStorage() });
 
+// POST api/diagnose
+// takes in audio, images, a userID, a plantID (optional), and a plantName (optional), preprocesses these, and then sends them to the Gemini API call
 // https://expressjs.com/en/resources/middleware/multer.html
 // used this to figure out how to use upload.fields
-// allow one audio file and 6 image files
-router.post('/', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image', maxCount: 6 }]), async (req, res) => {
+// allow one audio file and 9 image files
+router.post('/', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image', maxCount: 9 }]), async (req, res) => {
     try {
         // extract userID and plantID from the request
         // plantID should be mutable since if it doesn't exist, we have to generate a new one

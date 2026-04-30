@@ -12,6 +12,7 @@ export default function GooglePhotosPicker({ photoToken, onPhotosImported, disab
     // used to poll the Google Picker API for new data
     const pollIntervalRef = useRef(null);
 
+    // open popup for Google Photos Picker API
     const startPicker = async () => {
         setIsPicking(true);
         setStatusText('Opening Picker...');
@@ -66,6 +67,7 @@ export default function GooglePhotosPicker({ photoToken, onPhotosImported, disab
         }
     };
 
+    // check whether images are still being picked
     const checkSessionStatus = async (sessionId) => {
         try {
             // ask the picker api for the status of the input session
@@ -94,6 +96,7 @@ export default function GooglePhotosPicker({ photoToken, onPhotosImported, disab
         }
     };
 
+    // save the images to export to imageSelector
     const downloadImages = async (sessionId) => {
         try {
             // fetch the images the user requested

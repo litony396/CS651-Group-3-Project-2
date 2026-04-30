@@ -12,6 +12,7 @@ export default function AudioRecorder({ setAudio }) {
     // used to store the audio output from the MediaRecorder
     const recordedAudioRef = useRef([]);
 
+    // start audio recorder
     const startRecording = async () => {
         // clear any old recording data
         recordedAudioRef.current = []
@@ -58,6 +59,7 @@ export default function AudioRecorder({ setAudio }) {
         }
     }
 
+    // stop audio recorder
     const stopRecording = () => {
         if (mediaRecorderRef.current && isRecording) {
             mediaRecorderRef.current.stop();
