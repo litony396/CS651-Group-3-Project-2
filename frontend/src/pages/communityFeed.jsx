@@ -17,6 +17,10 @@ export default function CommunityFeed() {
     // helps render when history is being loaded
     const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
+    useEffect(() =>  {
+        document.title = "Community Feed | PlantCareAI";
+    }, []);
+
     // fetch the top 18 entries on load
     useEffect(() => {
         const fetchFeed = async () => {

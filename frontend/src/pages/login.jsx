@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { auth, provider, signInWithPopup } from "../firebase.js"
 import './login.css';
 import {GoogleAuthProvider} from "firebase/auth";
@@ -7,6 +7,10 @@ import ReactGA from "react-ga4"
 export default function Login({ setUser }) {
     // used to change what is rendered while logging in
     const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+    useEffect(() =>  {
+        document.title = "Login | PlantCareAI";
+    }, []);
 
 
     const handleGoogleLogin = async () => {

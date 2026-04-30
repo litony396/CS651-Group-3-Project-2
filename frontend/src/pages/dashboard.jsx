@@ -32,6 +32,10 @@ export default function Dashboard({ user }) {
     const selectedPlant = userPlants.find((p) => p.id === selectedPlantID);
     const hasName = Boolean(selectedPlant?.name);
 
+    useEffect(() =>  {
+        document.title = "Dashboard | PlantCareAI";
+    }, []);
+
     // fetches plantNames and IDs from database
     const fetchPlants = async () => {
         ReactGA.event({
