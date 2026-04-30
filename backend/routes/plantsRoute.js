@@ -11,7 +11,7 @@ router.get('/community', async (req, res) => {
         const feed = await getCommunityFeed();
 
 
-        await trackGA4Event("Community Feed Fetched (Firebase Call)", 'community');
+        await trackGA4Event("community_feed_fetched", 'community');
 
         // send it back matching JSON structure expected by frontend
         res.status(200).json({ feed: feed });
@@ -34,7 +34,7 @@ router.get('/:userID', async (req, res) => {
         // fetch the user's plants from Firestore
         const plants = await getUserPlants(userID);
 
-        await trackGA4Event("User Plant's Fetched (Firebase Call)", userID);
+        await trackGA4Event("user_plants_fetched", userID);
 
         // send it back matching the JSON structure expected by frontend
         res.status(200).json({ plants: plants });
@@ -63,7 +63,7 @@ router.get('/:userID/history', async (req, res) => {
         // fetch plant history for this plant
         const history = await getPlantHistory(userID, plantID);
 
-        await trackGA4Event("User Plant History Fetched (Firebase Call)", userID);
+        await trackGA4Event("user_plant_history_fetched", userID);
 
         // send to react frontend
         res.status(200).json({ history: history });

@@ -60,7 +60,7 @@ router.post('/', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image',
 
         const newRecord = await saveNewDiagnosis(userID, plantID, plantName, diagnosisText, audioURL, imageURLs);
 
-        await trackGA4Event("Backend Diagnosis Complete (Gemini and Firebase Call)", userID);
+        await trackGA4Event("backend_full_diagnosis_complete", userID);
 
         res.status(201).json({
             plantID: plantID,
