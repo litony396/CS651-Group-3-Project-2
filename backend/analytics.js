@@ -8,7 +8,7 @@ async function trackGA4Event(eventName, userID) {
         await axios.post(
             `https://www.google-analytics.com/mp/collect?measurement_id=${MEASUREMENTID}&api_secret=${GA4SECRET}`,
             {
-                clientID: userID,
+                client_id: userID,
                 events: [{name: eventName}]
             });
     } catch (error) {
