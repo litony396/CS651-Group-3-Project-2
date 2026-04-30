@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { auth, provider, signInWithPopup } from "../firebase.js"
 import './login.css';
 import {GoogleAuthProvider} from "firebase/auth";
+import ReactGA from "react-ga4"
 
 export default function Login({ setUser }) {
     // used to change what is rendered while logging in
@@ -10,6 +11,12 @@ export default function Login({ setUser }) {
 
     const handleGoogleLogin = async () => {
         setIsLoggingIn(true);
+
+        ReactGA.event({
+            category: "API Request",
+            action: "Called Firebase Auth API",
+            label: "Google Login"
+        })
 
         try {
             // open the Google sign-in pop-up window

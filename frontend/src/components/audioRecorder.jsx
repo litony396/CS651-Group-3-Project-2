@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import './audioRecorder.css';
+import ReactGA from "react-ga4";
 
 export default function AudioRecorder({ setAudio }) {
     // used to store audio URL from recording
@@ -41,6 +42,12 @@ export default function AudioRecorder({ setAudio }) {
                 // close mic stream
                 stream.getTracks().forEach(track => track.stop());
             }
+
+            ReactGA.event({
+                category: "User Action",
+                action: "Audio Recording",
+                label: "Uploaded audio for diagnosis"
+            })
 
             // start the mediaRecorder
             mediaRecorderRef.current.start();

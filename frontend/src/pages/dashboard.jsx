@@ -3,6 +3,7 @@ import './dashboard.css';
 import AudioRecorder from "../components/audioRecorder";
 import ImageSelector from "../components/imageSelector";
 import PlantHistory from "../components/plantHistory";
+import ReactGA from "react-ga4";
 
 export default function Dashboard({ user }) {
     // these variables are to do with uploading stuff to be diagnosed
@@ -33,6 +34,12 @@ export default function Dashboard({ user }) {
 
     // fetches plantNames and IDs from database
     const fetchPlants = async () => {
+        ReactGA.event({
+            category: "API Request",
+            action: "Called Firebase API",
+            label: "Get User's Plants"
+        })
+
         try {
             // make a query for the user's plants
             const res = await fetch(`/api/plants/${user.uid}`)
@@ -68,6 +75,13 @@ export default function Dashboard({ user }) {
 
         const fetchHistory = async () => {
             setIsLoadingHistory(true);
+
+            ReactGA.event({
+                category: "API Request",
+                action: "Called Firebase API",
+                label: "Get Plant History"
+            })
+
             try {
                 const res = await fetch(`/api/plants/${user.uid}/history?plantID=${selectedPlantID}`);
                 if (!res.ok) {
@@ -113,6 +127,11 @@ export default function Dashboard({ user }) {
                 formData.append('audio', selectedAudio);
             }
 
+            ReactGA.event({
+                category: "API Request",
+                action: "Called Gemini and Firebase API",
+                label: "Request Diagnosis for a plant"
+            })
 
             const response = await fetch('/api/diagnose', {
                 method: 'POST',
@@ -136,6 +155,12 @@ export default function Dashboard({ user }) {
             if (!selectedPlantID) {
                 setSelectedPlantID(data.plantID);
             }
+
+            ReactGA.event({
+                category: "API Request",
+                action: "Called Firebase API",
+                label: "Get Plant History"
+            })
 
             // grab new history from database
             try {

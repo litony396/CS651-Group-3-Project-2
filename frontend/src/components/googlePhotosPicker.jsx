@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import ReactGA from "react-ga4";
 
 // sets up Google Photos Picker API with this as a guide
 // https://developers.google.com/photos/picker/guides/get-started-picker
@@ -14,6 +15,12 @@ export default function GooglePhotosPicker({ photoToken, onPhotosImported, disab
     const startPicker = async () => {
         setIsPicking(true);
         setStatusText('Opening Picker...');
+
+        ReactGA.event({
+            category: "API Request",
+            action: "Called Google Photos Picker API",
+            label: "Let User Pick Photos"
+        })
 
         try {
             // create a picker session

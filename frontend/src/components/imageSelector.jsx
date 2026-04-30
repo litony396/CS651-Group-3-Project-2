@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import GooglePhotosPicker from "./googlePhotosPicker.jsx";
 import "./imageSelector.css"
+import ReactGA from "react-ga4";
 
 const MAX_IMAGES = 9;
 
@@ -30,6 +31,12 @@ export default function ImageSelector({ setDashboardImages, photoToken }) {
     // helper to add images to the images useState
     // separate function because handleImageUpload and handleGooglePhotosUpload both use the same code after preprocessing
     const processImages = (files) => {
+        ReactGA.event({
+            category: "User Action",
+            action: "Image Upload",
+            label: "Uploaded images for diagnosis"
+        })
+
         // enforce that there are no more than MAX_IMAGES
         const availableSlots = MAX_IMAGES - images.length;
 

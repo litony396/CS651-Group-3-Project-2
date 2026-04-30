@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PlantHistory from '../components/plantHistory';
 import './communityFeed.css'
+import ReactGA from "react-ga4";
 
 export default function CommunityFeed() {
     // sets what is on the feed
@@ -33,6 +34,13 @@ export default function CommunityFeed() {
                 setIsLoadingFeed(false);
             }
         };
+
+        ReactGA.event({
+            category: "API Request",
+            action: "Called Firebase API",
+            label: "Get Plant Community Feed"
+        })
+
         fetchFeed();
     }, []);
 
@@ -40,6 +48,12 @@ export default function CommunityFeed() {
     const handleViewHistory = async (entry) => {
         setIsLoadingHistory(true);
         setSelectedPlantOwner(entry); // Save the entry so we can show the UID
+        ReactGA.event({
+            category: "API Request",
+            action: "Called Firebase API",
+            label: "Get Plant History from Community Feed"
+        })
+
         try {
             // know the userID and plantID from backend query
             const res = await fetch(`/api/plants/${entry.userID}/history?plantID=${entry.plantID}`);
