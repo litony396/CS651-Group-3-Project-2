@@ -16,4 +16,4 @@ async function trackGA4Event(eventName, userID) {
     }
 }
 
-export { trackGA4Event }
+module.exports = { trackGA4Event }
