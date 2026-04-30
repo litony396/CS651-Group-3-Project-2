@@ -1,5 +1,6 @@
 const express = require('express');
 const multer = require('multer');
+const { trackGA4Event } = require('../analytics');
 const router = express.Router();
 
 const { uploadFile } = require('../services/storageService.js');
@@ -58,6 +59,8 @@ router.post('/', upload.fields([{ name: 'audio', maxCount: 1 }, { name: 'image',
         const diagnosisText = await generateDiagnosis(imageURLs, audioURL, reversePlantHistory);
 
         const newRecord = await saveNewDiagnosis(userID, plantID, plantName, diagnosisText, audioURL, imageURLs);
+
+        await trackGA4Event("Backend Diagnosis Complete (Gemini and Firebase Call)", userID);
 
         res.status(201).json({
             plantID: plantID,

@@ -1,5 +1,6 @@
 const express = require('express');
 const { getPlantHistory, getUserPlants, getCommunityFeed } = require('../services/databaseService');
+const { trackGA4Event } = require('../analytics');
 
 const router = express.Router();
 
@@ -8,6 +9,9 @@ router.get('/community', async (req, res) => {
     try {
         // fetch feed from Firestore
         const feed = await getCommunityFeed();
+
+
+        await trackGA4Event("Community Feed Fetched (Firebase Call)", 'community');
 
         // send it back matching JSON structure expected by frontend
         res.status(200).json({ feed: feed });
@@ -29,6 +33,8 @@ router.get('/:userID', async (req, res) => {
 
         // fetch the user's plants from Firestore
         const plants = await getUserPlants(userID);
+
+        await trackGA4Event("User Plant's Fetched (Firebase Call)", userID);
 
         // send it back matching the JSON structure expected by frontend
         res.status(200).json({ plants: plants });
@@ -56,6 +62,8 @@ router.get('/:userID/history', async (req, res) => {
 
         // fetch plant history for this plant
         const history = await getPlantHistory(userID, plantID);
+
+        await trackGA4Event("User Plant History Fetched (Firebase Call)", userID);
 
         // send to react frontend
         res.status(200).json({ history: history });
