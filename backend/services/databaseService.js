@@ -1,7 +1,7 @@
 const { db, admin } = require('../firebase.js');
 const { Logging } = require('@google-cloud/logging');
 const logging = new Logging();
-const log = logging.log("storage-requests");
+const log = logging.log("database-requests");
 
 async function logRequest(requestData) {
     const metadata= { resource: { type: "global" }};
