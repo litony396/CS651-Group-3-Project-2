@@ -1,4 +1,13 @@
 const { db, admin } = require('../firebase.js');
+const { Logging } = require('@google-cloud/logging');
+const logging = new Logging();
+const log = logging.log("storage-requests");
+
+async function logRequest(requestData) {
+    const metadata= { resource: { type: "global" }};
+    const entry = log.entry(metadata, requestData);
+    await log.write(entry)
+}
 
 // useful sources for the code here
 // https://firebase.google.com/docs/firestore/manage-data/add-data
@@ -27,17 +36,44 @@ const getNextDiagnosisNumber = async (userID, plantID) => {
             .doc(plantID)
             .collection('Diagnoses');
 
+        try {
+            await logRequest({
+                event: "Database Query: Get Next Diagnosis Number",
+                userID: userID,
+                plantID: plantID,
+                operation: "get()",
+                query: "orderBy(diagnosisNumber, desc).limit(1)"
+            })
+        } catch (error) {
+            console.warn("Failed to write to log for database query", error);
+        }
+
         // make a query for the current highest diagnosis number for this plant
         const numberQueryResults = await diagnoses
             .orderBy('diagnosisNumber', 'desc')
             .limit(1)
             .get();
 
+        try {
+            await logRequest({
+                event: "Database Query Success"
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for database success", error);
+        }
+
         // if the query resulted in nothing, then just return 1 because this is the first diagnosis for this plant
         // otherwise just increment the largest diagnosis number by 1
         return numberQueryResults.empty ? 1 : numberQueryResults.docs[0].data().diagnosisNumber + 1;
 
     } catch (error) {
+        try {
+            await logRequest({
+                event: "Database Query Failure"
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for database failure", error);
+        }
         console.error("Error getting next diagnosis number: ", error);
         throw new Error("Failed to retrieve next diagnosis number.");
     }
@@ -45,11 +81,30 @@ const getNextDiagnosisNumber = async (userID, plantID) => {
 
 const getUserPlants = async (userID) => {
     try {
+        try {
+            await logRequest({
+                event: "Database Query: Get User's Plants",
+                userID: userID,
+                operation: "get()"
+            })
+        } catch (error) {
+            console.warn("Failed to write to log for database query", error);
+        }
+
+
         // get the user's plant collection
         const plantsQueryResults = await db.collection('Users')
             .doc(userID)
             .collection('Plants')
             .get();
+
+        try {
+            await logRequest({
+                event: "Database Query Success"
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for database success", error);
+        }
 
         if (plantsQueryResults.empty) {
             return [];
@@ -64,6 +119,13 @@ const getUserPlants = async (userID) => {
         });
 
     } catch (error) {
+        try {
+            await logRequest({
+                event: "Database Query Failure"
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for database failure", error);
+        }
         console.error(`Error getting plants for user ${userID}:`, error);
         throw new Error("Failed to retrieve user plants.");
     }
@@ -72,17 +134,46 @@ const getUserPlants = async (userID) => {
 // collects 18 newest diagnoses to populate the community feed
 const getCommunityFeed = async () => {
     try {
+        try {
+            await logRequest({
+                event: "Database Query: Get Community Feed",
+                operation: "get()",
+                query: "Diagnoses.orderBy(timestamp, desc).limit(18)"
+            })
+        } catch (error) {
+            console.warn("Failed to write to log for database query", error);
+        }
+
+
         // collectionGroup searches every subcollection named 'diagnoses'
         const latestDiagnosesQueryResult = await db.collectionGroup('Diagnoses')
             .orderBy('timestamp', 'desc')
             .limit(18)
             .get();
 
+        try {
+            await logRequest({
+                event: "Database Query Success"
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for database success", error);
+        }
+
         if (latestDiagnosesQueryResult.empty) {
             return [];
         }
 
-        return await Promise.all(latestDiagnosesQueryResult.docs.map(async doc => {
+        try {
+            await logRequest({
+                event: `Database Query: Get Plant Name for Community Feed for ${latestDiagnosesQueryResult.size} plants`,
+                operation: "get()"
+            })
+        } catch (error) {
+            console.warn("Failed to write to log for database query", error);
+        }
+
+
+        const feed = await Promise.all(latestDiagnosesQueryResult.docs.map(async doc => {
             const data = doc.data();
 
             // extract the user/plant IDs directly from the Firestore path
@@ -104,7 +195,24 @@ const getCommunityFeed = async () => {
                 timestamp: data.timestamp ? data.timestamp.toDate().toISOString() : new Date().toISOString()
             };
         }));
+
+        try {
+            await logRequest({
+                event: "Database Query Success"
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for database success", error);
+        }
+
+        return feed
     } catch (error) {
+        try {
+            await logRequest({
+                event: "Database Query Failure"
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for database failure", error);
+        }
         console.error("Error fetching community diagnoses: ", error);
         throw new Error("Failed to retrieve global feed.");
     }
@@ -119,11 +227,32 @@ const getPlantHistory = async (userID, plantID) => {
             .doc(plantID)
             .collection('Diagnoses');
 
+        try {
+            await logRequest({
+                event: "Database Query: Get Plant History",
+                userID: userID,
+                plantID: plantID,
+                operation: "get()",
+                query: "orderBy(diagnosisNumber, desc)"
+            })
+        } catch (error) {
+            console.warn("Failed to write to log for database query", error);
+        }
+
         // order by diagnosisNumber with the newest being ordered first
         // have the newest stuff first because those are more likely to be accessed than older results
         const orderQueryResults = await diagnoses
             .orderBy('diagnosisNumber', 'desc')
             .get();
+
+
+        try {
+            await logRequest({
+                event: "Database Query Success"
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for database success", error);
+        }
 
         // if the query is empty then just return a blank array since there is no data to give
         if (orderQueryResults.empty) {
@@ -145,6 +274,13 @@ const getPlantHistory = async (userID, plantID) => {
         })
 
     } catch (error) {
+        try {
+            await logRequest({
+                event: "Gemini Database Query Failure"
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for database failure", error);
+        }
         console.error(`Error getting plant history for user ${userID} and plant ${plantID}`);
         throw new Error("Failed to retrieve plant history.")
     }
@@ -171,11 +307,33 @@ const saveNewDiagnosis = async (userID, plantID, plantName, diagnosisText, audio
             plantDocumentData.name = plantName;
         }
 
+        const { lastActivity, ...plantRecord } = plantDocumentData;
+
+        try {
+            await logRequest({
+                event: "Database Write: Save Plant",
+                userID: userID,
+                plantID: plantID,
+                operation: "set()",
+                recordSummary: plantRecord
+            })
+        } catch (error) {
+            console.warn("Failed to write to log for database query", error);
+        }
+
         await db.collection('Users')
             .doc(userID)
             .collection('Plants')
             .doc(plantID)
             .set(plantDocumentData , { merge: true })
+
+        try {
+            await logRequest({
+                event: "Database Write Success"
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for database success", error);
+        }
 
         // build the new record with input data
         const newRecord = {
@@ -189,6 +347,23 @@ const saveNewDiagnosis = async (userID, plantID, plantName, diagnosisText, audio
             timestamp: admin.firestore.FieldValue.serverTimestamp()
         };
 
+        try {
+            await logRequest({
+                event: "Database Write: Save Diagnosis",
+                userID: userID,
+                plantID: plantID,
+                operation: "set()",
+                recordSummary: {
+                    diagnosisNumber: Number(nextDiagnosisNumber),
+                    imageCount: imageURLs ? imageURLs.length : 0,
+                    hasAudio: Boolean(audioURL),
+                    diagnosisTextLength: diagnosisText ? diagnosisText.length : 0
+                }
+            })
+        } catch (error) {
+            console.warn("Failed to write to log for database query", error);
+        }
+
         // store this new record in the correct spot using our nested DB structure
         // stored at [userID][plantID][nextDiagnosisNumber]
         await db.collection('Users')
@@ -199,6 +374,14 @@ const saveNewDiagnosis = async (userID, plantID, plantName, diagnosisText, audio
             .doc(String(nextDiagnosisNumber))
             .set(newRecord);
 
+        try {
+            await logRequest({
+                event: "Database Query Success"
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for database success", error);
+        }
+
         // overwrite timestamp with the current time instead since admin.firestore.FieldValue.serverTimestamp() doesn't set until it reaches the database
         // this will cause a bug on the date display on the dashboard for the latest entry
         return {
@@ -206,6 +389,13 @@ const saveNewDiagnosis = async (userID, plantID, plantName, diagnosisText, audio
             timestamp: new Date().toISOString()
         };
     } catch (error) {
+        try {
+            await logRequest({
+                event: "Gemini Database Write Failure"
+            });
+        } catch (error) {
+            console.warn("Failed to write to log for database failure", error);
+        }
         console.error("Database Save Error: ", error);
         throw new Error("Diagnosis Failed to Save to the Database");
     }

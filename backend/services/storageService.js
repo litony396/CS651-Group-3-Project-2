@@ -55,7 +55,7 @@ const uploadFile = async (data, fileName, userID, fileType) => {
 
         try {
             await logRequest({
-                event: "Gemini Storage Upload Successful",
+                event: "Cloud Storage Upload Successful",
                 url: url
             });
         } catch (error) {
@@ -67,7 +67,7 @@ const uploadFile = async (data, fileName, userID, fileType) => {
     } catch (error) {
         try {
             await logRequest({
-                event: "Gemini Storage Upload Failure"
+                event: "Cloud Storage Upload Failure"
             });
         } catch (error) {
             console.warn("Failed to write to log for storage failure", error);
